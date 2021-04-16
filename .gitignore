@@ -1,0 +1,8 @@
+# Pulled from https://github.com/denoland/deno/blob/main/.gitignore
+# repo
+/node_modules
+/tsconfig.json
+
+# MacOS generated files
+.DS_Store
+.DS_Store?
