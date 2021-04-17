@@ -1,60 +1,19 @@
-type PaymentId = string;
-
-enum HelpFlag {
-  SHORT_FLAG = "-h",
-  LONG_FLAG = "--help",
-}
-
-interface FlagAsInterface {
-  SHORT_FLAG: string;
-  LONG_FLAG: string;
-}
-
-interface HelpFlagAsInterface extends FlagAsInterface {
-  SHORT_FLAG: "hi";
-}
-
-enum FlagEnum {
-  shortFlag = "a",
-  longFlag = "b",
-}
-
-const helpFlags: Map<FlagEnum, string> = new Map([
-  [FlagEnum.shortFlag, "-h"],
-  [FlagEnum.longFlag, "--help"],
-]);
-
 /*
+This is so awesome! Way more DRY too
 
-TODO honestly not sure which data structure to use here
+Might be worth including in the TS course
 
-It should probably just be an object
-
-like
-
-flag.shortFlag = string
-flag.longFlag = string
-
-TODO
-
-maybe create a builderFunction to build a flag?
-
-
-I'm probably completely overengineering this
-
+Credit: https://stackoverflow.com/a/54061487/3015595
 */
-
-enum PaymentIdFlag {
-  "i",
-  "--paymentId",
-  "--payment-id",
-}
-
-type HelpFlags = "-h" | "--help";
-
-const HELP_FLAG = Object.values(HelpFlag);
-
+type HelpFlag = typeof HELP_FLAGS[number];
+// May try and validate this later
+// credit: https://stackoverflow.com/questions/51445767/how-to-define-a-regex-matched-string-type-in-typescript
+type PaymentId = string;
+type PaymentIdFlag = typeof PAYMENT_ID_FLAGS[number];
 export type Args = HelpFlag | PaymentIdFlag | PaymentId;
+
+const HELP_FLAGS = ["-h", "--help"] as const;
+const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
 export const ERROR_MESSAGE_TEMPLATE = `❌ ERROR:`;
 export const UNSUPPORTED_ARG = (arg: string) =>
   `Received unsupported arg or flag ${arg}.
@@ -73,11 +32,11 @@ OPTIONS:
   -d, --dry-run
       Prints the commands for the download process without running them.
 
-  ${Object.values(HelpFlag).split(",")}
+  ${HELP_FLAGS.join(", ")}
       Prints help information
 
 ARGS:
-  -i, --paymentId
+  ${PAYMENT_ID_FLAGS.join(", ")}
       Required. Verifies course purchase.
       Example: $install_method --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i
 
