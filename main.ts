@@ -158,7 +158,6 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
 }
 
 export function hasNextArg(arr: Args[], currentIndex: number): boolean {
-  // const length = arr.length;
   const nextIndex = currentIndex + 1;
 
   if (arr[nextIndex]) {
