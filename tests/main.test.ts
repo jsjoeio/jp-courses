@@ -5,8 +5,11 @@ import {
   handleErrorMessage,
   hasNextArg,
   HELP_MESSAGE,
+  INVALID_PAYMENT_ID_VALUE,
+  isValidPaymentIdValue,
   main,
   MISSING_PAYMENT_ID_VALUE,
+  ScriptFlagsAndArgs,
   UNSUPPORTED_ARG,
 } from "../main.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
@@ -17,6 +20,7 @@ Deno.test("hello world", () => {
   assertEquals(actual(), expected);
 });
 
+// TODO move out the tests that are integration i.e. sanitizeExit: false
 /*
   NOTE: we use sanitizeExit: false
   because the help flag exits the script
@@ -201,4 +205,64 @@ Deno.test({
 
     assertEquals(actual, expected);
   },
+});
+
+Deno.test({
+  name:
+    "validPaymentIdValue should return false if it doesn't match the pattern",
+  fn() {
+    const fakePaymentIdValue = "hello2223";
+    const actual = isValidPaymentIdValue(fakePaymentIdValue);
+    assertEquals(actual, false);
+  },
+});
+
+Deno.test({
+  name: "validPaymentIdValue should return true if value matches pattern",
+  fn() {
+    const fakePaymentIdValue =
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
+    const actual = isValidPaymentIdValue(fakePaymentIdValue);
+    assertEquals(actual, true);
+  },
+});
+
+Deno.test({
+  name:
+    "handleArgs should log an error if --paymentId is passed without an invalid value",
+  fn() {
+    // Save the real console.error
+    // to restore later
+    let errorMessage = null;
+    const error = console.error;
+
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
+    handleArgs(["--paymentId", "csliveeee234523"]);
+
+    console.error = error;
+    assertEquals(
+      errorMessage,
+      `${ERROR_MESSAGE_TEMPLATE} ${INVALID_PAYMENT_ID_VALUE}`,
+    );
+  },
+  sanitizeExit: false,
+});
+
+Deno.test({
+  name: "handleArgs should return an object with the paymentId",
+  fn() {
+    const scriptFlagsAndArgs: ScriptFlagsAndArgs = handleArgs([
+      "--paymentId",
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
+    ]);
+    const actualPaymentId = scriptFlagsAndArgs.argsPassed.paymentId;
+    const expected =
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
+
+    assertEquals(actualPaymentId, expected);
+  },
+  sanitizeExit: false,
 });
