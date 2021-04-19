@@ -22,6 +22,7 @@ export type ScriptFlagsAndArgs = {
   argsPassed: {
     paymentId: PaymentId;
   };
+  errors: string[];
 };
 
 const HELP_FLAGS = ["-h", "--help"] as const;
@@ -65,27 +66,43 @@ More information can be found at https://github.com/jsjoeio/jp-courses-install
 export function main(args: string[]): void {
   // We cast it because Deno.args is string[]
   // while our function only allows Args[]
-  handleArgs(args as Args[]);
+  const scriptFlagsAndArgs: ScriptFlagsAndArgs = handleArgs(args as Args[]);
+
+  const isHelpFlagEnabled = scriptFlagsAndArgs.flagsEnabled.help;
+  const hasErrors = scriptFlagsAndArgs.errors.length > 0;
+
+  if (isHelpFlagEnabled) {
+    console.log(HELP_MESSAGE);
+    return;
+  }
+
+  if (hasErrors) {
+    const errors = scriptFlagsAndArgs.errors;
+    errors.forEach((e) => logErrorMessage(e));
+    return;
+  }
 }
 
 /**
- * Throws an error message using the ERROR_MESSAGE_TEMPLATE
+ * Logs an error message using the ERROR_MESSAGE_TEMPLATE
  * and the message passed in
  */
-export function handleErrorMessage(msg: string): void {
-  /*
-    The first implementation threw an Error
-    but that crashes the program, and we don't want that.
-    Bad UX.
-
-    Instead, we log the error and exit the process gracefully.
-  */
+export function logErrorMessage(msg: string): void {
   console.error(`${ERROR_MESSAGE_TEMPLATE} ${msg}`);
-  // TODO I don't think we should exit this script here
-  // it's making testing difficult
-  // I should probably extract to another function
-  // and test separately
+}
+
+/**
+ * Exits the script with exit code 1
+ */
+export function exitScriptWithError() {
   Deno.exit(1);
+}
+
+/**
+ * Exits the script with exit code 0
+ */
+export function exitScriptWithSuccess() {
+  Deno.exit(0);
 }
 
 export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
@@ -97,8 +114,17 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
     argsPassed: {
       paymentId: "",
     },
+    errors: [],
   };
-  args.forEach((arg, index) => {
+
+  // This is a label for the loop
+  // we do this so that we can break the outerLoop
+  // from inside the switch statement
+  // See: https://stackoverflow.com/questions/17072605/break-for-loop-from-inside-of-switch-case-in-javascript
+  //
+  outerLoop:
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index];
     switch (arg) {
       /*
         We check for the -h/--help flag first
@@ -107,28 +133,23 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
       */
       case "-h":
       case "--help":
-        console.log(HELP_MESSAGE);
-
         scriptFlagsAndArgs.flagsEnabled.help = true;
-        // Exit script successfully
-        // TODO extract into function
-        // return Deno.exit(0);
-
-        break;
-
+        break outerLoop;
       case "-i":
       case "--payment-id":
       case "--paymentId": {
         if (!hasNextArg(args, index)) {
           const errorMessage = MISSING_PAYMENT_ID_VALUE(arg);
-          handleErrorMessage(errorMessage);
+          scriptFlagsAndArgs.errors.push(errorMessage);
+          break outerLoop;
         }
 
         const paymentId = args[index + 1];
         const isValid = isValidPaymentIdValue(paymentId);
         if (!isValid) {
           const errorMessage = INVALID_PAYMENT_ID_VALUE(paymentId);
-          handleErrorMessage(errorMessage);
+          scriptFlagsAndArgs.errors.push(errorMessage);
+          break outerLoop;
         }
 
         scriptFlagsAndArgs.argsPassed.paymentId = paymentId;
@@ -146,13 +167,11 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
 
         // Otherwise, it's probably and unsupported flag
         const unsupportedArgMessage = UNSUPPORTED_ARG(arg);
-        handleErrorMessage(
-          unsupportedArgMessage,
-        );
-        break;
+        scriptFlagsAndArgs.errors.push(unsupportedArgMessage);
+        break outerLoop;
       }
     }
-  });
+  }
 
   return scriptFlagsAndArgs;
 }

@@ -3,10 +3,14 @@
 // i.e. a simple function like checking for next arg
 import {
   Args,
+  ERROR_MESSAGE_TEMPLATE,
+  handleArgs,
   hasNextArg,
   INVALID_PAYMENT_ID_VALUE,
   isValidPaymentIdValue,
+  logErrorMessage,
   MISSING_PAYMENT_ID_VALUE,
+  ScriptFlagsAndArgs,
   UNSUPPORTED_ARG,
 } from "../main.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
@@ -95,5 +99,89 @@ Deno.test({
    Received: ${value}
    A valid payment id matches this pattern: cs_live_[alphanumeric]+`,
     );
+  },
+});
+
+Deno.test({
+  name: "logErrorMessage should log message passed to it",
+  fn() {
+    const fakeError = "no bueno";
+    // Save the real console.error
+    // to restore later
+    let errorMessage = null;
+    const error = console.error;
+
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
+    logErrorMessage(fakeError);
+
+    console.error = error;
+    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${fakeError}`);
+  },
+});
+
+Deno.test({
+  name: "handleArgs should take a -h flag (short for --help)",
+  fn() {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  },
+  sanitizeExit: false,
+});
+
+Deno.test({
+  name: "handleArgs should take a --help flag",
+  fn() {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  },
+});
+
+Deno.test({
+  name: "handleArgs have an error if --paymentId is passed without a value",
+  only: false,
+  fn() {
+    const arg = "--paymentId";
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([arg]);
+    const errorMessage = MISSING_PAYMENT_ID_VALUE(arg);
+
+    assertEquals(scriptArgsAndFlags.errors.includes(errorMessage), true);
+  },
+});
+
+Deno.test({
+  name:
+    "handleArgs have an error if --paymentId is passed with an invalid value",
+  only: false,
+  fn() {
+    const arg = "--paymentId";
+    const invalidValue = "cs_jj_hello12432134";
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([
+      arg,
+      invalidValue,
+    ]);
+    const errorMessage = INVALID_PAYMENT_ID_VALUE(invalidValue);
+
+    assertEquals(scriptArgsAndFlags.errors.includes(errorMessage), true);
+  },
+});
+
+Deno.test({
+  name: "handleArgs should return an object with the paymentId",
+  only: false,
+  fn() {
+    const scriptFlagsAndArgs: ScriptFlagsAndArgs = handleArgs([
+      "--paymentId",
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
+    ]);
+    const actualPaymentId = scriptFlagsAndArgs.argsPassed.paymentId;
+    const expected =
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
+
+    assertEquals(actualPaymentId, expected);
   },
 });
