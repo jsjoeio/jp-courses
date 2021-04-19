@@ -4,7 +4,7 @@ import {
   MISSING_PAYMENT_ID_VALUE,
   UNSUPPORTED_ARG,
 } from "./constants.ts";
-import { Args, ScriptFlagsAndArgs } from "../main.ts";
+import { Args, ScriptFlagsAndArgs } from "./types.d.ts";
 /**
  * Logs an error message using the ERROR_MESSAGE_TEMPLATE
  * and the message passed in

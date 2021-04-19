@@ -1,31 +1,6 @@
-import { HELP_FLAGS, HELP_MESSAGE, PAYMENT_ID_FLAGS } from "./lib/constants.ts";
+import { HELP_MESSAGE } from "./lib/constants.ts";
 import { handleArgs, logErrorMessage } from "./lib/utils.ts";
-/*
-This is so awesome! Way more DRY too
-
-Might be worth including in the TS course
-
-Credit: https://stackoverflow.com/a/54061487/3015595
-*/
-export type HelpFlag = typeof HELP_FLAGS[number];
-// May try and validate this later
-// credit: https://stackoverflow.com/questions/51445767/how-to-define-a-regex-matched-string-type-in-typescript
-export type PaymentId = string;
-export type PaymentIdArg = typeof PAYMENT_ID_FLAGS[number];
-export type Args = HelpFlag | PaymentIdArg | PaymentId;
-
-type FlagEnabled = boolean;
-
-export type ScriptFlagsAndArgs = {
-  flagsEnabled: {
-    help: FlagEnabled;
-    dryRun: FlagEnabled;
-  };
-  argsPassed: {
-    paymentId: PaymentId;
-  };
-  errors: string[];
-};
+import { Args, ScriptFlagsAndArgs } from "./lib/types.d.ts";
 
 /**
  * The main script that's called
