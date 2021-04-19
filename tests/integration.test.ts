@@ -1,24 +1,18 @@
+// Integration Tests
+// Anything that isn't a full e2e but might rely on something else
+// i.e. handleArgs because it calls other functions like handleErrorMessage
 import {
-  Args,
   ERROR_MESSAGE_TEMPLATE,
   handleArgs,
   handleErrorMessage,
-  hasNextArg,
   HELP_MESSAGE,
   INVALID_PAYMENT_ID_VALUE,
-  isValidPaymentIdValue,
   main,
   MISSING_PAYMENT_ID_VALUE,
   ScriptFlagsAndArgs,
   UNSUPPORTED_ARG,
 } from "../main.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
-
-Deno.test("hello world", () => {
-  const actual = () => "Hello world!";
-  const expected = "Hello world!";
-  assertEquals(actual(), expected);
-});
 
 // TODO move out the tests that are integration i.e. sanitizeExit: false
 /*
@@ -181,50 +175,6 @@ Deno.test({
     assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${fakeError}`);
   },
   sanitizeExit: false,
-});
-
-Deno.test({
-  name: "hasNextArg should return true if there is another arg",
-  fn() {
-    const fakeArgs: Args[] = ["--paymentId", "fakeid123"];
-    const currentIndex = 0;
-    const actual = hasNextArg(fakeArgs, currentIndex);
-    const expected = true;
-
-    assertEquals(actual, expected);
-  },
-});
-
-Deno.test({
-  name: "hasNextArg should return false if there is not another arg",
-  fn() {
-    const fakeArgs: Args[] = ["--paymentId"];
-    const currentIndex = 0;
-    const actual = hasNextArg(fakeArgs, currentIndex);
-    const expected = false;
-
-    assertEquals(actual, expected);
-  },
-});
-
-Deno.test({
-  name:
-    "validPaymentIdValue should return false if it doesn't match the pattern",
-  fn() {
-    const fakePaymentIdValue = "hello2223";
-    const actual = isValidPaymentIdValue(fakePaymentIdValue);
-    assertEquals(actual, false);
-  },
-});
-
-Deno.test({
-  name: "validPaymentIdValue should return true if value matches pattern",
-  fn() {
-    const fakePaymentIdValue =
-      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
-    const actual = isValidPaymentIdValue(fakePaymentIdValue);
-    assertEquals(actual, true);
-  },
 });
 
 Deno.test({
