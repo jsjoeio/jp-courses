@@ -3,16 +3,18 @@
 // i.e. a simple function like checking for next arg
 import {
   Args,
-  ERROR_MESSAGE_TEMPLATE,
   handleArgs,
   hasNextArg,
-  INVALID_PAYMENT_ID_VALUE,
   isValidPaymentIdValue,
   logErrorMessage,
-  MISSING_PAYMENT_ID_VALUE,
   ScriptFlagsAndArgs,
-  UNSUPPORTED_ARG,
 } from "../main.ts";
+import {
+  ERROR_MESSAGE_TEMPLATE,
+  INVALID_PAYMENT_ID_VALUE,
+  MISSING_PAYMENT_ID_VALUE,
+  UNSUPPORTED_ARG,
+} from "../lib/constants.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 
 Deno.test({

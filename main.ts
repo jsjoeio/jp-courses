@@ -1,3 +1,12 @@
+import {
+  ERROR_MESSAGE_TEMPLATE,
+  HELP_FLAGS,
+  HELP_MESSAGE,
+  INVALID_PAYMENT_ID_VALUE,
+  MISSING_PAYMENT_ID_VALUE,
+  PAYMENT_ID_FLAGS,
+  UNSUPPORTED_ARG,
+} from "./lib/constants.ts";
 /*
 This is so awesome! Way more DRY too
 
@@ -5,11 +14,11 @@ Might be worth including in the TS course
 
 Credit: https://stackoverflow.com/a/54061487/3015595
 */
-type HelpFlag = typeof HELP_FLAGS[number];
+export type HelpFlag = typeof HELP_FLAGS[number];
 // May try and validate this later
 // credit: https://stackoverflow.com/questions/51445767/how-to-define-a-regex-matched-string-type-in-typescript
-type PaymentId = string;
-type PaymentIdArg = typeof PAYMENT_ID_FLAGS[number];
+export type PaymentId = string;
+export type PaymentIdArg = typeof PAYMENT_ID_FLAGS[number];
 export type Args = HelpFlag | PaymentIdArg | PaymentId;
 
 type FlagEnabled = boolean;
@@ -24,41 +33,6 @@ export type ScriptFlagsAndArgs = {
   };
   errors: string[];
 };
-
-const HELP_FLAGS = ["-h", "--help"] as const;
-const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
-export const ERROR_MESSAGE_TEMPLATE = `❌ ERROR:`;
-export const UNSUPPORTED_ARG = (arg: string) =>
-  `Received unsupported arg or flag ${arg}.
-   Please run with "--help" to see all options.`;
-
-export const MISSING_PAYMENT_ID_VALUE = (arg: PaymentIdArg) =>
-  `Missing payment id.
-   ${arg} requires a value like "${arg} your_id_here123"`;
-export const INVALID_PAYMENT_ID_VALUE = (value: PaymentId) =>
-  `Invalid payment id.
-   Received: ${value}
-   A valid payment id matches this pattern: cs_live_[alphanumeric]+`;
-export const HELP_MESSAGE = `
-Downloads the $COURSE_NAME for paid users.
-
-USAGE:
-  $install_method [OPTIONS] (-i|--paymentId) <paymentId>
-
-OPTIONS:
-  -d, --dry-run
-      Prints the commands for the download process without running them.
-
-  ${HELP_FLAGS.join(", ")}
-      Prints help information
-
-ARGS:
-  ${PAYMENT_ID_FLAGS.join(", ")}
-      Required. Verifies course purchase.
-      Example: $install_method --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i
-
-More information can be found at https://github.com/jsjoeio/jp-courses-install
-`;
 
 /**
  * The main script that's called

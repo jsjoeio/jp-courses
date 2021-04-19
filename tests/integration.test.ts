@@ -1,12 +1,12 @@
 // Integration Tests
 // Anything that isn't a full e2e but might rely on something else
 // i.e. main because it calls other functions
+import { main } from "../main.ts";
 import {
   ERROR_MESSAGE_TEMPLATE,
   HELP_MESSAGE,
-  main,
   UNSUPPORTED_ARG,
-} from "../main.ts";
+} from "../lib/constants.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 
 Deno.test({
