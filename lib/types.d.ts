@@ -25,3 +25,9 @@ export type ScriptFlagsAndArgs = {
   };
   errors: string[];
 };
+
+export type VerifyPurchase = {
+  verified: boolean;
+  downloadLink?: string;
+  error?: string;
+};

@@ -4,7 +4,12 @@ import {
   MISSING_PAYMENT_ID_VALUE,
   UNSUPPORTED_ARG,
 } from "./constants.ts";
-import { Args, ScriptFlagsAndArgs } from "./types.d.ts";
+import {
+  Args,
+  PaymentId,
+  ScriptFlagsAndArgs,
+  VerifyPurchase,
+} from "./types.d.ts";
 /**
  * Logs an error message using the ERROR_MESSAGE_TEMPLATE
  * and the message passed in
@@ -112,4 +117,16 @@ export function isValidPaymentIdValue(value: string): boolean {
   const regex = new RegExp(pattern);
 
   return regex.test(value);
+}
+
+export function verifyPurchase(paymentId: PaymentId): VerifyPurchase {
+  const verifiedPurchase: VerifyPurchase = {
+    verified: false,
+    downloadLink: "",
+    error: "mesage",
+  };
+
+  // TODO
+  // verify paymentId
+  return verifiedPurchase;
 }
