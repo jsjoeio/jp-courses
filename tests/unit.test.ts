@@ -7,8 +7,10 @@ import {
   hasNextArg,
   isValidPaymentIdValue,
   logErrorMessage,
+  verifyPurchase,
 } from "../lib/utils.ts";
 import {
+  COULD_NOT_VERIFY_PAYMENT_ID,
   ERROR_MESSAGE_TEMPLATE,
   INVALID_PAYMENT_ID_VALUE,
   MISSING_PAYMENT_ID_VALUE,
@@ -17,6 +19,7 @@ import {
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 
 Deno.test({
+  only: false,
   name: "hasNextArg should return true if there is another arg",
   fn() {
     const fakeArgs: Args[] = ["--paymentId", "fakeid123"];
@@ -143,6 +146,25 @@ Deno.test({
 });
 
 Deno.test({
+  name: "handleArgs should enable the help flag if called with an empty string",
+  fn() {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([""]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  },
+});
+
+Deno.test({
+  name:
+    "handleArgs should enable the help flag if called with a long empty string",
+  fn() {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["      "]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  },
+});
+
+Deno.test({
   name: "handleArgs have an error if --paymentId is passed without a value",
   only: false,
   fn() {
@@ -184,5 +206,48 @@ Deno.test({
       "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
 
     assertEquals(actualPaymentId, expected);
+  },
+});
+
+Deno.test({
+  name: "COULD_NOT_VERIFY_PAYMENT_ID should return error message",
+  only: false,
+  fn() {
+    const value = "ck_liev_dsafk5w3";
+    const actual = COULD_NOT_VERIFY_PAYMENT_ID(value);
+    assertEquals(
+      actual,
+      `Could not verify purchase using payment id: ${value}
+   Please contact joe at joe previte [dot com]`,
+    );
+  },
+});
+
+Deno.test({
+  name: "verifyPurchase should return an error if called with an empty string",
+  only: false,
+  async fn() {
+    const paymentId = "";
+    const verifiedPurchase = await verifyPurchase(paymentId);
+    const actualErrorMessage = verifiedPurchase.error;
+    const expected = MISSING_PAYMENT_ID_VALUE("--paymentId");
+
+    assertEquals(actualErrorMessage, expected);
+  },
+});
+
+Deno.test({
+  name:
+    "verifyPurchase should return a VerifiedPurchase object with a downloadLink",
+  only: false,
+  async fn() {
+    const paymentId =
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
+    const verifiedPurchase = await verifyPurchase(paymentId);
+    const actualDownloadLink = verifiedPurchase.downloadLink;
+    const expected =
+      "https://raw.githubusercontent.com/jsjoeio/install-scripts/main/fake-course.zip";
+
+    assertEquals(actualDownloadLink, expected);
   },
 });

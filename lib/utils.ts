@@ -1,4 +1,5 @@
 import {
+  COULD_NOT_VERIFY_PAYMENT_ID,
   ERROR_MESSAGE_TEMPLATE,
   INVALID_PAYMENT_ID_VALUE,
   MISSING_PAYMENT_ID_VALUE,
@@ -9,6 +10,7 @@ import {
   PaymentId,
   ScriptFlagsAndArgs,
   VerifyPurchase,
+  VerifyPurchaseResponse,
 } from "./types.d.ts";
 /**
  * Logs an error message using the ERROR_MESSAGE_TEMPLATE
@@ -51,13 +53,15 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
   //
   outerLoop:
   for (let index = 0; index < args.length; index++) {
-    const arg = args[index];
+    // We trim in case there's extra space before or after the arg
+    const arg = args[index].trim();
     switch (arg) {
       /*
         We check for the -h/--help flag first
         because we ignore all the other flags
         print the message and exit the script.
       */
+      case "":
       case "-h":
       case "--help":
         scriptFlagsAndArgs.flagsEnabled.help = true;
@@ -119,14 +123,35 @@ export function isValidPaymentIdValue(value: string): boolean {
   return regex.test(value);
 }
 
-export function verifyPurchase(paymentId: PaymentId): VerifyPurchase {
+export async function verifyPurchase(
+  paymentId: PaymentId,
+): Promise<VerifyPurchase> {
   const verifiedPurchase: VerifyPurchase = {
     verified: false,
     downloadLink: "",
-    error: "mesage",
+    error: null,
+    paymentId,
   };
 
-  // TODO
-  // verify paymentId
+  if (paymentId.trim() === "") {
+    verifiedPurchase.error = MISSING_PAYMENT_ID_VALUE("--paymentId");
+    return verifiedPurchase;
+  }
+
+  const response = await fetch(
+    `https://joeprevite.com/.netlify/functions/verify-course-purchase?paymentId=${paymentId}`,
+  );
+
+  const json: VerifyPurchaseResponse = await response.json();
+
+  // If verified is a property, we know it was successful
+  // Credit: https://stackoverflow.com/a/49363671/3015595
+  if ("verified" in json) {
+    verifiedPurchase.verified = json.verified;
+    verifiedPurchase.downloadLink = json.downloadLink;
+  } else {
+    verifiedPurchase.error = COULD_NOT_VERIFY_PAYMENT_ID(paymentId);
+  }
+
   return verifiedPurchase;
 }

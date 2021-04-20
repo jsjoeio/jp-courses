@@ -29,5 +29,20 @@ export type ScriptFlagsAndArgs = {
 export type VerifyPurchase = {
   verified: boolean;
   downloadLink?: string;
-  error?: string;
+  error?: null | string;
+  paymentId: PaymentId;
 };
+
+interface VerifyPurchaseSuccessResponse {
+  verified: boolean;
+  downloadLink: string;
+}
+
+interface VerifyPurchaseErrorResponse {
+  error: string;
+  paymentId: string;
+}
+
+export type VerifyPurchaseResponse =
+  | VerifyPurchaseSuccessResponse
+  | VerifyPurchaseErrorResponse;

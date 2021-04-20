@@ -1,11 +1,11 @@
 import { HELP_MESSAGE } from "./lib/constants.ts";
-import { handleArgs, logErrorMessage } from "./lib/utils.ts";
+import { handleArgs, logErrorMessage, verifyPurchase } from "./lib/utils.ts";
 import { Args, ScriptFlagsAndArgs } from "./lib/types.d.ts";
 
 /**
  * The main script that's called
  */
-export function main(args: string[]): void {
+export async function main(args: string[]): Promise<void> {
   // We cast it because Deno.args is string[]
   // while our function only allows Args[]
   const scriptFlagsAndArgs: ScriptFlagsAndArgs = handleArgs(args as Args[]);
@@ -23,6 +23,14 @@ export function main(args: string[]): void {
     errors.forEach((e) => logErrorMessage(e));
     return;
   }
+
+  const paymentId = scriptFlagsAndArgs.argsPassed.paymentId;
+  const verifiedPurchase = await verifyPurchase(paymentId);
+
+  if (verifiedPurchase.error) {
+    logErrorMessage(verifiedPurchase.error);
+    return;
+  }
 }
 
-main(Deno.args);
+await main(Deno.args);
