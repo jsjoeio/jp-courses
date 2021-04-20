@@ -1,4 +1,4 @@
-import { HELP_MESSAGE } from "./lib/constants.ts";
+import { HELP_MESSAGE, MISSING_PAYMENT_ID_VALUE } from "./lib/constants.ts";
 import { handleArgs, logErrorMessage, verifyPurchase } from "./lib/utils.ts";
 import { Args, ScriptFlagsAndArgs } from "./lib/types.d.ts";
 
@@ -24,7 +24,14 @@ export async function main(args: string[]): Promise<void> {
     return;
   }
 
+  // If paymentId is an empty string here
+  // then we can assume the case that nothing
+  // was passed and just return
   const paymentId = scriptFlagsAndArgs.argsPassed.paymentId;
+  if (paymentId.trim() === "") {
+    return;
+  }
+
   const verifiedPurchase = await verifyPurchase(paymentId);
 
   if (verifiedPurchase.error) {

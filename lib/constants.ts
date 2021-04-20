@@ -7,7 +7,7 @@ export const UNSUPPORTED_ARG = (arg: string) =>
   `Received unsupported arg or flag ${arg}.
    Please run with "--help" to see all options.`;
 
-export const MISSING_PAYMENT_ID_VALUE = (arg: PaymentIdArg) =>
+export const MISSING_PAYMENT_ID_VALUE = (arg: PaymentIdArg = "--paymentId") =>
   `Missing payment id.
    ${arg} requires a value like "${arg} your_id_here123"`;
 export const INVALID_PAYMENT_ID_VALUE = (value: PaymentId) =>

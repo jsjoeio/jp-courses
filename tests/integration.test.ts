@@ -147,3 +147,5 @@ Deno.test({
     assertEquals(errorMessage, null);
   },
 });
+
+// TODO throw logs at every step and figure out why we're missing the payment id in the integration tests
