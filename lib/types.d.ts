@@ -40,7 +40,6 @@ interface VerifyPurchaseSuccessResponse {
 
 interface VerifyPurchaseErrorResponse {
   error: string;
-  paymentId: string;
 }
 
 export type VerifyPurchaseResponse =
