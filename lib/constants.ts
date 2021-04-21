@@ -19,6 +19,11 @@ export const INVALID_PAYMENT_ID_VALUE = (value: PaymentId) =>
   `Invalid payment id.
    Received: ${value}
    A valid payment id matches this pattern: cs_live_[alphanumeric]+`;
+export const DIRECTORY_NOT_FOUND = (dir: string) =>
+  `Directory not found.
+   Received: ${dir}`;
+export const FAILED_TO_DOWNLOAD_ZIP = `Failed to download zip.
+   Please try again.`;
 export const COULD_NOT_VERIFY_PAYMENT_ID = (value: PaymentId) =>
   `Could not verify purchase using payment id: ${value}
    Please contact joe at joe previte [dot com]`;
