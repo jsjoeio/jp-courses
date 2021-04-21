@@ -9,5 +9,5 @@ Install script for my courses written in Deno.
 To run the integration tests:
 ```sh
 cd tests
-deno test --unstable --allow-read integration.test.ts
+deno test --unstable --allow-read --allow-write --allow-net integration.test.ts
 ```
