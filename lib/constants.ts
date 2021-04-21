@@ -10,6 +10,11 @@ export const UNSUPPORTED_ARG = (arg: string) =>
 export const MISSING_PAYMENT_ID_VALUE = (arg: PaymentIdArg = "--paymentId") =>
   `Missing payment id.
    ${arg} requires a value like "${arg} your_id_here123"`;
+export const MISSING_DOWNLOAD_LINK = (paymentId: PaymentId) =>
+  `Failed to download course.
+   Missing download link after verifying paymentId
+   Your paymentId: ${paymentId}
+   Please contact joe at joe previte [dot com]`;
 export const INVALID_PAYMENT_ID_VALUE = (value: PaymentId) =>
   `Invalid payment id.
    Received: ${value}
