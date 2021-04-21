@@ -28,14 +28,14 @@ export type ScriptFlagsAndArgs = {
 
 export type VerifyPurchase = {
   verified: boolean;
-  downloadLink?: string;
+  downloadLink?: string | URL;
   error?: null | string;
   paymentId: PaymentId;
 };
 
 interface VerifyPurchaseSuccessResponse {
   verified: boolean;
-  downloadLink: string;
+  downloadLink: string | URL;
 }
 
 interface VerifyPurchaseErrorResponse {
