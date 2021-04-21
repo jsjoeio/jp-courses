@@ -1,4 +1,4 @@
-import { HELP_MESSAGE, MISSING_PAYMENT_ID_VALUE } from "./lib/constants.ts";
+import { HELP_MESSAGE } from "./lib/constants.ts";
 import { handleArgs, logErrorMessage, verifyPurchase } from "./lib/utils.ts";
 import { Args, ScriptFlagsAndArgs } from "./lib/types.d.ts";
 
@@ -38,6 +38,8 @@ export async function main(args: string[]): Promise<void> {
     logErrorMessage(verifiedPurchase.error);
     return;
   }
+
+  // TODO download course zip file
 }
 
 await main(Deno.args);
