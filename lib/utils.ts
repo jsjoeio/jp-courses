@@ -1,7 +1,9 @@
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
+  DIRECTORY_NOT_FOUND,
   ERROR_MESSAGE_TEMPLATE,
   INVALID_PAYMENT_ID_VALUE,
+  MISSING_DOWNLOAD_LINK,
   MISSING_PAYMENT_ID_VALUE,
   UNSUPPORTED_ARG,
 } from "./constants.ts";
@@ -12,6 +14,9 @@ import {
   VerifyPurchase,
   VerifyPurchaseResponse,
 } from "./types.d.ts";
+import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
+import { Destination, download } from "https://deno.land/x/download/mod.ts";
+
 /**
  * Logs an error message using the ERROR_MESSAGE_TEMPLATE
  * and the message passed in
@@ -154,4 +159,40 @@ export async function verifyPurchase(
   }
 
   return verifiedPurchase;
+}
+
+export async function downloadZipFromLink(
+  verifiedPurchase: VerifyPurchase,
+  dir: string,
+): Promise<void> {
+  const { downloadLink, paymentId } = verifiedPurchase;
+  if (!downloadLink) {
+    const errorMessage = MISSING_DOWNLOAD_LINK(paymentId);
+    logErrorMessage(errorMessage);
+    return;
+  }
+
+  try {
+    const destination: Destination = {
+      file: "course.zip",
+      dir,
+    };
+    const dirExists = await exists(dir);
+    if (!dirExists) {
+      const errorMessage = DIRECTORY_NOT_FOUND(dir);
+      logErrorMessage(errorMessage);
+      return;
+    }
+
+    await download(downloadLink, destination);
+    return;
+  } catch (error) {
+    if (error && error.message && error.message.includes("directory")) {
+      const errorMessage = DIRECTORY_NOT_FOUND(dir);
+      logErrorMessage(errorMessage);
+      return;
+    }
+    logErrorMessage(error.message);
+    return;
+  }
 }
