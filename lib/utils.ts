@@ -15,7 +15,10 @@ import {
   VerifyPurchaseResponse,
 } from "./types.d.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
-import { Destination, download } from "https://deno.land/x/download/mod.ts";
+import {
+  Destination,
+  download,
+} from "https://deno.land/x/download@v1.0.1/mod.ts";
 
 /**
  * Logs an error message using the ERROR_MESSAGE_TEMPLATE

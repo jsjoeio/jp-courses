@@ -214,7 +214,7 @@ Deno.test({
 // TODO mock download request
 Deno.test({
   name: "downloadZipFromLink should download zip to path passed in",
-  only: true,
+  only: false,
   async fn() {
     const fakeVerifiedPurchase: VerifyPurchase = {
       paymentId: "cs_live_4321GHdfaJDK",
