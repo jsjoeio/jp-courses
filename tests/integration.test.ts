@@ -13,12 +13,19 @@ import {
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assertThrowsAsync,
+} from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  test,
+} from "https://x.nest.land/hooked-describe@0.1.0/mod.ts";
 
-Deno.test({
-  name: "main should log an error if cannot verify purchase",
-  only: false,
-  async fn() {
+describe("main", () => {
+  test("should log an error if cannot verify purchase", async () => {
     // TODO eventually mock fetch
     // because this will fail otherwise
     // Save the real console.error
@@ -42,13 +49,33 @@ Deno.test({
 
     console.error = error;
     assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMesage}`);
-  },
-});
+  });
+  test("should log an error if cannot verify purchase", async () => {
+    // TODO eventually mock fetch
+    // because this will fail otherwise
+    // Save the real console.error
+    // to restore later
+    const paymentId =
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUJqO2i";
+    const args = [
+      "--paymentId",
+      paymentId,
+    ];
+    const expectedMesage = COULD_NOT_VERIFY_PAYMENT_ID(paymentId);
+    const error = console.error;
 
-Deno.test({
-  name: "main should take a --help flag",
-  only: false,
-  async fn() {
+    let errorMessage = null;
+
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
+    await main(args);
+
+    console.error = error;
+    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMesage}`);
+  });
+  test("should take a --help flag", async () => {
     // Save the real console.log
     // to restore later
     let message = null;
@@ -70,13 +97,8 @@ Deno.test({
     console.error = error;
     assertEquals(message, HELP_MESSAGE);
     assertEquals(errorMessage, null);
-  },
-});
-
-Deno.test({
-  name: "main should take a -h flag (short for --help)",
-  only: false,
-  async fn() {
+  });
+  test("should take a -h flag (short for --help)", async () => {
     // Save the real console.log
     // to restore later
     let message = null;
@@ -98,13 +120,8 @@ Deno.test({
     console.error = error;
     assertEquals(message, HELP_MESSAGE);
     assertEquals(errorMessage, null);
-  },
-});
-
-Deno.test({
-  name: "main should log an error for unsupported flags",
-  only: false,
-  async fn() {
+  });
+  test("should log an error for unsupported flags", async () => {
     // Save the real console.error
     // to restore later
     const arg = "--yolo";
@@ -121,14 +138,8 @@ Deno.test({
 
     console.error = error;
     assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMesage}`);
-  },
-});
-
-Deno.test({
-  name:
-    "main should log the help message if called with an empty string or no args",
-  only: false,
-  async fn() {
+  });
+  test("should log the help message if called with an empty string or no args", async () => {
     // Save the real console.log
     // to restore later
     let message = null;
@@ -150,43 +161,62 @@ Deno.test({
     console.error = error;
     assertEquals(message, HELP_MESSAGE);
     assertEquals(errorMessage, null);
-  },
+  });
+  test("should download the course.zip to the directory it's running in", async () => {
+    const pathToZip = "./course.zip";
+    // Call main with the --help flag
+    await main([
+      "--paymentId",
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
+    ]);
+
+    const zipExists = await exists(pathToZip);
+    assertEquals(zipExists, true);
+
+    // Clean up
+    Deno.remove(pathToZip);
+  });
 });
 
 // TODO throw logs at every step and figure out why we're missing the payment id in the integration tests
 
-Deno.test({
-  name: "downloadZipFromLink should error if no downloadLink",
-  only: false,
-  async fn() {
-    let errorMessage = null;
-    const error = console.error;
+describe("downloadZipFromLink", () => {
+  let tmpDirPath = "";
+  let pathToZip = "";
+  const expectedName = "course.zip";
+  const prefix = `dowloadZipFromLink`;
 
-    console.error = (x) => {
-      errorMessage = x;
-    };
-    const fakeVerifiedPurchase: VerifyPurchase = {
-      paymentId: "cs_live_4321GHdfaJDK",
-      verified: false,
-      downloadLink: "",
-      error: "Not verified",
-    };
+  beforeEach(async () => {
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    pathToZip = `${tmpDirPath}/${expectedName}`;
+  });
+  afterEach(() => {
+    // Clean up
+    Deno.remove(tmpDirPath, { recursive: true });
+  });
+  // test("should error if no downloadLink", async () => {
+  //   let errorMessage = null;
+  //   const error = console.error;
 
-    const dir = `./tests/tmpDir`;
-    await downloadZipFromLink(fakeVerifiedPurchase, dir);
-    const expectedMessage = MISSING_DOWNLOAD_LINK(
-      fakeVerifiedPurchase.paymentId,
-    );
+  //   console.error = (x) => {
+  //     errorMessage = x;
+  //   };
+  //   const fakeVerifiedPurchase: VerifyPurchase = {
+  //     paymentId: "cs_live_4321GHdfaJDK",
+  //     verified: false,
+  //     downloadLink: "",
+  //     error: "Not verified",
+  //   };
 
-    console.error = error;
-    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
-  },
-});
+  //   await downloadZipFromLink(fakeVerifiedPurchase, "./tmpDir");
+  //   const expectedMessage = MISSING_DOWNLOAD_LINK(
+  //     fakeVerifiedPurchase.paymentId,
+  //   );
 
-Deno.test({
-  name: "downloadZipFromLink should error if dir doesn't exist",
-  only: false,
-  async fn() {
+  //   console.error = error;
+  //   assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
+  // });
+  test("should error if dir doesn't exist", async () => {
     let errorMessage = null;
     const error = console.error;
 
@@ -201,55 +231,25 @@ Deno.test({
     };
 
     const dir = `./notExistantDir`;
-    await downloadZipFromLink(fakeVerifiedPurchase, dir);
     const expectedMessage = DIRECTORY_NOT_FOUND(
       dir,
     );
+    await downloadZipFromLink(fakeVerifiedPurchase, dir);
 
     console.error = error;
     assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
-  },
-});
-
-// TODO mock download request
-Deno.test({
-  name: "downloadZipFromLink should download zip to path passed in",
-  only: false,
-  async fn() {
+  });
+  // TODO mock download request
+  test("should download zip to path passed in", async () => {
     const fakeVerifiedPurchase: VerifyPurchase = {
       paymentId: "cs_live_4321GHdfaJDK",
       verified: true,
       downloadLink:
         "https://raw.githubusercontent.com/jsjoeio/install-scripts/main/fake-course.zip",
     };
-    const expectedName = "course.zip";
-    const dir = `./tmpDir`;
-    const pathToZip = `${dir}/${expectedName}`;
-    await downloadZipFromLink(fakeVerifiedPurchase, dir);
+    await downloadZipFromLink(fakeVerifiedPurchase, tmpDirPath);
 
     const zipExists = await exists(pathToZip);
     assertEquals(zipExists, true);
-
-    // Clean up
-    Deno.remove(pathToZip);
-  },
-});
-
-Deno.test({
-  name: "main should download the course.zip to the directory it's running in",
-  only: false,
-  async fn() {
-    const pathToZip = "./course.zip";
-    // Call main with the --help flag
-    await main([
-      "--paymentId",
-      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
-    ]);
-
-    const zipExists = await exists(pathToZip);
-    assertEquals(zipExists, true);
-
-    // Clean up
-    Deno.remove(pathToZip);
-  },
+  });
 });

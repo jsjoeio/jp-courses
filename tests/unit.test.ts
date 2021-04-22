@@ -17,56 +17,46 @@ import {
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import {
+  describe,
+  test,
+} from "https://x.nest.land/hooked-describe@0.1.0/mod.ts";
 
-Deno.test({
-  only: false,
-  name: "hasNextArg should return true if there is another arg",
-  fn() {
+describe("hasNextArg", () => {
+  test("should return true if there is another arg", () => {
     const fakeArgs: Args[] = ["--paymentId", "fakeid123"];
     const currentIndex = 0;
     const actual = hasNextArg(fakeArgs, currentIndex);
     const expected = true;
 
     assertEquals(actual, expected);
-  },
-});
-
-Deno.test({
-  name: "hasNextArg should return false if there is not another arg",
-  fn() {
+  });
+  test("should return false if there is not another arg", () => {
     const fakeArgs: Args[] = ["--paymentId"];
     const currentIndex = 0;
     const actual = hasNextArg(fakeArgs, currentIndex);
     const expected = false;
 
     assertEquals(actual, expected);
-  },
+  });
 });
 
-Deno.test({
-  name:
-    "isValidPaymentIdValue should return false if it doesn't match the pattern",
-  fn() {
+describe("isValidPaymentIdValue", () => {
+  test("should return false if it doesn't match the pattern", () => {
     const fakePaymentIdValue = "hello2223";
     const actual = isValidPaymentIdValue(fakePaymentIdValue);
     assertEquals(actual, false);
-  },
-});
-
-Deno.test({
-  name: "isValidPaymentIdValue should return true if value matches pattern",
-  fn() {
+  });
+  test("should return true if value matches pattern", () => {
     const fakePaymentIdValue =
       "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
     const actual = isValidPaymentIdValue(fakePaymentIdValue);
     assertEquals(actual, true);
-  },
+  });
 });
 
-Deno.test({
-  name: "UNSUPPORTED_ARG should return error message",
-  only: false,
-  fn() {
+describe("constants", () => {
+  test("UNSUPPORTED_ARG should return error message", () => {
     const arg = "--joe";
     const actual = UNSUPPORTED_ARG(arg);
     assertEquals(
@@ -74,13 +64,8 @@ Deno.test({
       `Received unsupported arg or flag ${arg}.
    Please run with "--help" to see all options.`,
     );
-  },
-});
-
-Deno.test({
-  name: "MISSING_PAYMENT_ID_VALUE should return error message",
-  only: false,
-  fn() {
+  });
+  test("MISSING_PAYMENT_ID_VALUE should return error message", () => {
     const arg = "--paymentId";
     const actual = MISSING_PAYMENT_ID_VALUE(arg);
     assertEquals(
@@ -88,13 +73,8 @@ Deno.test({
       `Missing payment id.
    ${arg} requires a value like "${arg} your_id_here123"`,
     );
-  },
-});
-
-Deno.test({
-  name: "INVALID_PAYMENT_ID_VALUE should return error message",
-  only: false,
-  fn() {
+  });
+  test("INVALID_PAYMENT_ID_VALUE should return error message", () => {
     const value = "ck_liev_dsafk5w3";
     const actual = INVALID_PAYMENT_ID_VALUE(value);
     assertEquals(
@@ -103,12 +83,20 @@ Deno.test({
    Received: ${value}
    A valid payment id matches this pattern: cs_live_[alphanumeric]+`,
     );
-  },
+  });
+  test("COULD_NOT_VERIFY_PAYMENT_ID should return error message", () => {
+    const value = "ck_liev_dsafk5w3";
+    const actual = COULD_NOT_VERIFY_PAYMENT_ID(value);
+    assertEquals(
+      actual,
+      `Could not verify purchase using payment id: ${value}
+   Please contact joe at joe previte [dot com]`,
+    );
+  });
 });
 
-Deno.test({
-  name: "logErrorMessage should log message passed to it",
-  fn() {
+describe("logErrorMessage", () => {
+  test("should log message passed to it", () => {
     const fakeError = "no bueno";
     // Save the real console.error
     // to restore later
@@ -123,64 +111,55 @@ Deno.test({
 
     console.error = error;
     assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${fakeError}`);
-  },
+  });
 });
 
-Deno.test({
-  name: "handleArgs should take a -h flag (short for --help)",
-  fn() {
+describe("handleArgs", () => {
+  test("should take a -h flag (short for --help)", () => {
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
 
     assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
-  },
-  sanitizeExit: false,
-});
-
-Deno.test({
-  name: "handleArgs should take a --help flag",
-  fn() {
+  });
+  test("should take a -h flag (short for --help)", () => {
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
 
     assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
-  },
-});
+  });
+  test("should take a -h flag (short for --help)", () => {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
 
-Deno.test({
-  name: "handleArgs should enable the help flag if called with an empty string",
-  fn() {
+    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  });
+  test("should take a --help flag", () => {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  });
+  test("should enable the help flag if called with an empty string", () => {
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([""]);
 
     assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
-  },
-});
-
-Deno.test({
-  name:
-    "handleArgs should enable the help flag if called with a long empty string",
-  fn() {
+  });
+  test("should enable the help flag if called with a long empty string", () => {
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["      "]);
 
     assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
-  },
-});
-
-Deno.test({
-  name: "handleArgs have an error if --paymentId is passed without a value",
-  only: false,
-  fn() {
+  });
+  test("have an error if --paymentId is passed without a value", () => {
     const arg = "--paymentId";
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([arg]);
     const errorMessage = MISSING_PAYMENT_ID_VALUE(arg);
 
     assertEquals(scriptArgsAndFlags.errors.includes(errorMessage), true);
-  },
-});
+  });
+  test("have an error if --paymentId is passed without a value", () => {
+    const arg = "--paymentId";
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([arg]);
+    const errorMessage = MISSING_PAYMENT_ID_VALUE(arg);
 
-Deno.test({
-  name:
-    "handleArgs have an error if --paymentId is passed with an invalid value",
-  only: false,
-  fn() {
+    assertEquals(scriptArgsAndFlags.errors.includes(errorMessage), true);
+  });
+  test("have an error if --paymentId is passed with an invalid value", () => {
     const arg = "--paymentId";
     const invalidValue = "cs_jj_hello12432134";
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([
@@ -190,13 +169,8 @@ Deno.test({
     const errorMessage = INVALID_PAYMENT_ID_VALUE(invalidValue);
 
     assertEquals(scriptArgsAndFlags.errors.includes(errorMessage), true);
-  },
-});
-
-Deno.test({
-  name: "handleArgs should return an object with the paymentId",
-  only: false,
-  fn() {
+  });
+  test("should return an object with the paymentId", () => {
     const scriptFlagsAndArgs: ScriptFlagsAndArgs = handleArgs([
       "--paymentId",
       "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
@@ -206,41 +180,19 @@ Deno.test({
       "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
 
     assertEquals(actualPaymentId, expected);
-  },
+  });
 });
 
-Deno.test({
-  name: "COULD_NOT_VERIFY_PAYMENT_ID should return error message",
-  only: false,
-  fn() {
-    const value = "ck_liev_dsafk5w3";
-    const actual = COULD_NOT_VERIFY_PAYMENT_ID(value);
-    assertEquals(
-      actual,
-      `Could not verify purchase using payment id: ${value}
-   Please contact joe at joe previte [dot com]`,
-    );
-  },
-});
-
-Deno.test({
-  name: "verifyPurchase should return an error if called with an empty string",
-  only: false,
-  async fn() {
+describe("verifyPurchase", () => {
+  test("verifyPurchase should return an error if called with an empty string", async () => {
     const paymentId = "";
     const verifiedPurchase = await verifyPurchase(paymentId);
     const actualErrorMessage = verifiedPurchase.error;
     const expected = MISSING_PAYMENT_ID_VALUE("--paymentId");
 
     assertEquals(actualErrorMessage, expected);
-  },
-});
-
-Deno.test({
-  name:
-    "verifyPurchase should return a VerifiedPurchase object with a downloadLink",
-  only: false,
-  async fn() {
+  });
+  test("verifyPurchase should return a VerifiedPurchase object with a downloadLink", async () => {
     const paymentId =
       "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
     const verifiedPurchase = await verifyPurchase(paymentId);
@@ -249,5 +201,5 @@ Deno.test({
       "https://raw.githubusercontent.com/jsjoeio/install-scripts/main/fake-course.zip";
 
     assertEquals(actualDownloadLink, expected);
-  },
+  });
 });
