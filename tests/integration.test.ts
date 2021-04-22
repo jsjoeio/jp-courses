@@ -234,3 +234,22 @@ Deno.test({
     Deno.remove(pathToZip);
   },
 });
+
+Deno.test({
+  name: "main should download the course.zip to the directory it's running in",
+  only: false,
+  async fn() {
+    const pathToZip = "./course.zip";
+    // Call main with the --help flag
+    await main([
+      "--paymentId",
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
+    ]);
+
+    const zipExists = await exists(pathToZip);
+    assertEquals(zipExists, true);
+
+    // Clean up
+    Deno.remove(pathToZip);
+  },
+});

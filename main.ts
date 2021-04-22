@@ -1,5 +1,10 @@
 import { HELP_MESSAGE } from "./lib/constants.ts";
-import { handleArgs, logErrorMessage, verifyPurchase } from "./lib/utils.ts";
+import {
+  downloadZipFromLink,
+  handleArgs,
+  logErrorMessage,
+  verifyPurchase,
+} from "./lib/utils.ts";
 import { Args, ScriptFlagsAndArgs } from "./lib/types.d.ts";
 
 /**
@@ -39,7 +44,8 @@ export async function main(args: string[]): Promise<void> {
     return;
   }
 
-  // TODO download course zip file
+  // Download course to current directory
+  await downloadZipFromLink(verifiedPurchase, "./");
 }
 
 await main(Deno.args);
