@@ -169,13 +169,13 @@ export async function downloadZipFromLink(
   dir: string,
 ): Promise<void> {
   const { downloadLink, paymentId } = verifiedPurchase;
-  if (!downloadLink) {
-    const errorMessage = MISSING_DOWNLOAD_LINK(paymentId);
-    logErrorMessage(errorMessage);
-    return;
-  }
 
   try {
+    if (!downloadLink) {
+      const errorMessage = MISSING_DOWNLOAD_LINK(paymentId);
+      logErrorMessage(errorMessage);
+      return;
+    }
     const destination: Destination = {
       file: "course.zip",
       dir,
