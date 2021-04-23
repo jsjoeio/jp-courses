@@ -4,11 +4,21 @@ Install script for my courses written in Deno.
 
 ## Local Development
 
-### Testing
+## Scripts
 
-To run the integration tests:
+This project uses [`denon`](https://github.com/denosaurs/denon) to manage scripts. See [`scripts.json`](./scripts.json)
+
+### `start`
+
+Runs the script with a valid payment ID.
+
+### `help`
+
+Runs the script with the `--help` flag.
+
+### `test`
+
+To run the tests:
 ```sh
-cd tests
-deno test --unstable --allow-net ./tests/unit.test.ts
-deno test --unstable --allow-net --allow-read --allow-write ./tests/integration.test.ts
+denon test
 ```
