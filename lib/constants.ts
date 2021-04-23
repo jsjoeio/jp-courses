@@ -22,6 +22,9 @@ export const INVALID_PAYMENT_ID_VALUE = (value: PaymentId) =>
 export const DIRECTORY_NOT_FOUND = (dir: string) =>
   `Directory not found.
    Received: ${dir}`;
+export const FILE_NOT_FOUND = (file: string) =>
+  `File not found.
+   Received: ${file}`;
 export const FAILED_TO_DOWNLOAD_ZIP = `Failed to download zip.
    Please try again.`;
 export const COULD_NOT_VERIFY_PAYMENT_ID = (value: PaymentId) =>

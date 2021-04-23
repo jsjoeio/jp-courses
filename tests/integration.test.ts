@@ -2,21 +2,21 @@
 // Anything that isn't a full e2e but might rely on something else
 // i.e. main because it calls other functions
 import { main } from "../main.ts";
-import { downloadZipFromLink } from "../lib/utils.ts";
+import { downloadZipFromLink, unZipCourse } from "../lib/utils.ts";
 import { VerifyPurchase } from "../lib/types.d.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DIRECTORY_NOT_FOUND,
   ERROR_MESSAGE_TEMPLATE,
+  FILE_NOT_FOUND,
   HELP_MESSAGE,
   MISSING_DOWNLOAD_LINK,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
-import {
-  assertEquals,
-  assertThrowsAsync,
-} from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import { JSZip } from "https://deno.land/x/jszip@0.9.0/mod.ts";
+
 import {
   afterEach,
   beforeEach,
@@ -194,28 +194,28 @@ describe("downloadZipFromLink", () => {
     // Clean up
     Deno.remove(tmpDirPath, { recursive: true });
   });
-  // test("should error if no downloadLink", async () => {
-  //   let errorMessage = null;
-  //   const error = console.error;
+  test("should error if no downloadLink", async () => {
+    let errorMessage = null;
+    const error = console.error;
 
-  //   console.error = (x) => {
-  //     errorMessage = x;
-  //   };
-  //   const fakeVerifiedPurchase: VerifyPurchase = {
-  //     paymentId: "cs_live_4321GHdfaJDK",
-  //     verified: false,
-  //     downloadLink: "",
-  //     error: "Not verified",
-  //   };
+    console.error = (x) => {
+      errorMessage = x;
+    };
+    const fakeVerifiedPurchase: VerifyPurchase = {
+      paymentId: "cs_live_4321GHdfaJDK",
+      verified: false,
+      downloadLink: "",
+      error: "Not verified",
+    };
 
-  //   await downloadZipFromLink(fakeVerifiedPurchase, "./tmpDir");
-  //   const expectedMessage = MISSING_DOWNLOAD_LINK(
-  //     fakeVerifiedPurchase.paymentId,
-  //   );
+    await downloadZipFromLink(fakeVerifiedPurchase, "./tmpDir");
+    const expectedMessage = MISSING_DOWNLOAD_LINK(
+      fakeVerifiedPurchase.paymentId,
+    );
 
-  //   console.error = error;
-  //   assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
-  // });
+    console.error = error;
+    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
+  });
   test("should error if dir doesn't exist", async () => {
     let errorMessage = null;
     const error = console.error;
@@ -251,5 +251,80 @@ describe("downloadZipFromLink", () => {
 
     const zipExists = await exists(pathToZip);
     assertEquals(zipExists, true);
+  });
+});
+
+describe("unZipCourse", () => {
+  const error = console.error;
+  let errorMessage = "";
+  let tmpDirPath = "";
+  let pathToUnzippedDir = "";
+  let pathToZippedDir = "";
+  let zippedDir: Deno.File;
+  const expectedName = "course";
+  const prefix = `unZipCourse`;
+
+  beforeEach(async () => {
+    // Create a temporary directory
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    console.log(`tmpDirPath: ${tmpDirPath}`);
+    // Create a fake zip file
+    const zip = new JSZip();
+    zip.addFile("Hello.txt", "Hello World\n");
+    // TODO create a fake zip
+    /*
+
+    I think what I need to do is
+    1. create a tmpDir
+    1. create a sub directory
+    2. add a file
+    3. zip it up
+
+
+    But I'll try creating a basic file.zip first
+
+    */
+
+    pathToZippedDir = `${tmpDirPath}/${expectedName}.zip`;
+    console.log(`pathToZippedDir: ${pathToZippedDir}`);
+    await zip.writeZip(pathToZippedDir);
+    console.log("wrote zip");
+    // zippedDir = await Deno.create(pathToZippedDir);
+    pathToUnzippedDir = `${tmpDirPath}/${expectedName}`;
+    console.log(`pathToUnzippedDir: ${pathToUnzippedDir}`);
+    console.error = (x) => {
+      errorMessage = x;
+    };
+  });
+
+  afterEach(() => {
+    // Clean up
+    // Deno.close(zippedDir.rid);
+    Deno.remove(tmpDirPath, { recursive: true });
+    console.error = error;
+  });
+
+  test("should error if zip doesn't exist", async () => {
+    const fileName = "myfakecourse.zip";
+    const expectedMessage = FILE_NOT_FOUND(fileName);
+    await unZipCourse("myfakecourse.zip");
+    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
+  });
+  test("should unzip the file in the directory", async () => {
+    console.log(`We are unzipping ${pathToZippedDir} to ${tmpDirPath}`);
+    await unZipCourse(pathToZippedDir, pathToUnzippedDir);
+    console.log("inside the tmp dir");
+    for await (const dirEntry of Deno.readDir(tmpDirPath)) {
+      console.log(dirEntry.name);
+    }
+    // TODO this is a mess...
+    //
+
+    // Check that it exists
+    const unZippedExists = await exists(pathToUnzippedDir);
+    assertEquals(unZippedExists, true);
+    // and the zipped version doesn't
+    // const zipExists = await exists(pathToZippedDir);
+    // assertEquals(zipExists, false);
   });
 });

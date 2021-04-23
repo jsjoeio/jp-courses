@@ -5,7 +5,7 @@
     "start": {
       "cmd": "deno run main.ts --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
       "desc": "run project",
-      "allow": ["net", "read", "write"],
+      "allow": ["net", "read", "write", "run"],
       "unstable": true
     },
     "help": {
@@ -16,7 +16,7 @@
     "test": {
       "cmd": "deno test",
       "desc": "run all tests",
-      "allow": ["net", "read", "write"],
+      "allow": ["net", "read", "write", "run"],
       "unstable": true
     }
   }

@@ -2,6 +2,7 @@ import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DIRECTORY_NOT_FOUND,
   ERROR_MESSAGE_TEMPLATE,
+  FILE_NOT_FOUND,
   INVALID_PAYMENT_ID_VALUE,
   MISSING_DOWNLOAD_LINK,
   MISSING_PAYMENT_ID_VALUE,
@@ -15,6 +16,7 @@ import {
   VerifyPurchaseResponse,
 } from "./types.d.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
+import { unZipFromFile } from "https://deno.land/x/zip@v1.1.1/mod.ts";
 import {
   Destination,
   download,
@@ -197,5 +199,36 @@ export async function downloadZipFromLink(
     }
     logErrorMessage(error.message);
     return;
+  }
+}
+
+export async function unZipCourse(
+  fileName: string,
+  destinationPath = "./",
+) {
+  try {
+    const fileExists = await exists(fileName);
+    console.log("inside our function, does file exist?", fileExists);
+    if (!fileExists) {
+      const errorMessage = FILE_NOT_FOUND(fileName);
+      logErrorMessage(errorMessage);
+      return;
+    }
+    console.log("file exists, right about to unzip");
+    const successful = await unZipFromFile(fileName, destinationPath);
+    // TODO delete the zip after unzipping it
+    // or maybe put in another function
+    // these console logs never happen??
+    console.log("try again");
+    console.log("was it successful?", successful);
+    if (!successful) {
+      const errorMessage = FILE_NOT_FOUND(fileName);
+      logErrorMessage(errorMessage);
+      return;
+    }
+  } catch (error) {
+    console.log("show me this ", error);
+    const errorMessage = FILE_NOT_FOUND(fileName);
+    logErrorMessage(errorMessage);
   }
 }
