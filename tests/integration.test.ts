@@ -176,6 +176,25 @@ describe("main", () => {
     // Clean up
     Deno.remove(pathToZip);
   });
+  test("should download and unzip the course in the current directory", async () => {
+    const pathToZip = "./course.zip";
+    const pathToUnzipped = "./course";
+    // Call main with the --help flag
+    await main([
+      "--paymentId",
+      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
+    ]);
+
+    const zipExists = await exists(pathToZip);
+    assertEquals(zipExists, true);
+
+    const unZippedExists = await exists(pathToUnzipped);
+    assertEquals(unZippedExists, true);
+
+    // Clean up
+    Deno.remove(pathToZip);
+    Deno.remove(pathToUnzipped, { recursive: true });
+  });
 });
 
 // TODO throw logs at every step and figure out why we're missing the payment id in the integration tests
