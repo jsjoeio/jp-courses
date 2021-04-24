@@ -3,6 +3,7 @@ import {
   downloadZipFromLink,
   handleArgs,
   logErrorMessage,
+  removeZip,
   unZipCourse,
   verifyPurchase,
 } from "./lib/utils.ts";
@@ -50,6 +51,9 @@ export async function main(args: string[]): Promise<void> {
 
   // Unzip course to current directory
   await unZipCourse("course.zip", "./course");
+
+  // Remove zip
+  await removeZip("./course.zip");
 }
 
 await main(Deno.args);

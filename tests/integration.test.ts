@@ -176,7 +176,7 @@ describe("main", () => {
     // Clean up
     Deno.remove(pathToZip);
   });
-  test("should download and unzip the course in the current directory", async () => {
+  test("should download, unzip the course and remove zip in the current directory", async () => {
     const pathToZip = "./course.zip";
     const pathToUnzipped = "./course";
     // Call main with the --help flag
@@ -186,13 +186,12 @@ describe("main", () => {
     ]);
 
     const zipExists = await exists(pathToZip);
-    assertEquals(zipExists, true);
+    assertEquals(zipExists, false);
 
     const unZippedExists = await exists(pathToUnzipped);
     assertEquals(unZippedExists, true);
 
     // Clean up
-    Deno.remove(pathToZip);
     Deno.remove(pathToUnzipped, { recursive: true });
   });
 });
@@ -347,8 +346,5 @@ describe("unZipCourse", () => {
     // Check that it exists
     const unZippedExists = await exists(pathToUnzippedDir);
     assertEquals(unZippedExists, true);
-    // and the zipped version doesn't
-    // const zipExists = await exists(pathToZippedDir);
-    // assertEquals(zipExists, false);
   });
 });
