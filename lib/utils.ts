@@ -76,6 +76,10 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
       case "--help":
         scriptFlagsAndArgs.flagsEnabled.help = true;
         break outerLoop;
+      case "--dryRun":
+      case "--dry-run":
+        scriptFlagsAndArgs.flagsEnabled.dryRun = true;
+        break outerLoop;
       case "-i":
       case "--payment-id":
       case "--paymentId": {

@@ -125,20 +125,20 @@ describe("handleArgs", () => {
 
     assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
   });
-  test("should take a -h flag (short for --help)", () => {
-    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
-
-    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
-  });
-  test("should take a -h flag (short for --help)", () => {
-    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
-
-    assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
-  });
   test("should take a --help flag", () => {
-    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["-h"]);
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["--help"]);
 
     assertEquals(scriptArgsAndFlags.flagsEnabled.help, true);
+  });
+  test("should take a --dryRun flag", () => {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["--dryRun"]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.dryRun, true);
+  });
+  test("should take a --dry-run flag", () => {
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs(["--dry-run"]);
+
+    assertEquals(scriptArgsAndFlags.flagsEnabled.dryRun, true);
   });
   test("should enable the help flag if called with an empty string", () => {
     const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([""]);
