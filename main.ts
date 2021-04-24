@@ -6,7 +6,7 @@ import {
   unZipCourse,
   verifyPurchase,
 } from "./lib/utils.ts";
-import { Args, ScriptFlagsAndArgs } from "./lib/types.d.ts";
+import { Args, ScriptFlagsAndArgs } from "./lib/types.ts";
 
 /**
  * The main script that's called

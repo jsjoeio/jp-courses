@@ -14,7 +14,7 @@ import {
   ScriptFlagsAndArgs,
   VerifyPurchase,
   VerifyPurchaseResponse,
-} from "./types.d.ts";
+} from "./types.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
 import { unZipFromFile } from "https://deno.land/x/zip@v1.1.1/mod.ts";
 import {

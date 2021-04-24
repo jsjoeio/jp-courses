@@ -3,7 +3,7 @@
 // i.e. main because it calls other functions
 import { main } from "../main.ts";
 import { downloadZipFromLink, unZipCourse } from "../lib/utils.ts";
-import { VerifyPurchase } from "../lib/types.d.ts";
+import { VerifyPurchase } from "../lib/types.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DIRECTORY_NOT_FOUND,

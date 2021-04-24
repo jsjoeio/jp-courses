@@ -1,7 +1,7 @@
 // Unit Tests
 // Anything that doesn't rely on something else
 // i.e. a simple function like checking for next arg
-import { Args, ScriptFlagsAndArgs } from "../lib/types.d.ts";
+import { Args, ScriptFlagsAndArgs } from "../lib/types.ts";
 import {
   handleArgs,
   hasNextArg,
@@ -203,3 +203,9 @@ describe("verifyPurchase", () => {
     assertEquals(actualDownloadLink, expected);
   });
 });
+
+describe("removeZip", () => {
+  test("should do nothing if zip doesn't exist", () => {
+    // do nothing
+  })
+})

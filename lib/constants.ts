@@ -1,4 +1,4 @@
-import { PaymentId, PaymentIdArg } from "./types.d.ts";
+import { PaymentId, PaymentIdArg } from "./types.ts";
 
 export const HELP_FLAGS = ["-h", "--help"] as const;
 export const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
