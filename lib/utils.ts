@@ -208,26 +208,31 @@ export async function unZipCourse(
 ) {
   try {
     const fileExists = await exists(fileName);
-    console.log("inside our function, does file exist?", fileExists);
     if (!fileExists) {
       const errorMessage = FILE_NOT_FOUND(fileName);
       logErrorMessage(errorMessage);
       return;
     }
-    console.log("file exists, right about to unzip");
     const successful = await unZipFromFile(fileName, destinationPath);
-    // TODO delete the zip after unzipping it
-    // or maybe put in another function
-    // these console logs never happen??
-    console.log("try again");
-    console.log("was it successful?", successful);
     if (!successful) {
       const errorMessage = FILE_NOT_FOUND(fileName);
       logErrorMessage(errorMessage);
       return;
     }
-  } catch (error) {
-    console.log("show me this ", error);
+
+    // Clean up
+    // We do this because I don't think unZipFromFile
+    // closes resources for us
+    const { resources, close } = Deno;
+    const openResources = resources();
+    for (const key in openResources) {
+      const resourceValue = openResources[key];
+      const standardDenoResources = ["stdin", "stdout", "stderr"];
+      if (!standardDenoResources.includes(resourceValue)) {
+        close(parseInt(key));
+      }
+    }
+  } catch {
     const errorMessage = FILE_NOT_FOUND(fileName);
     logErrorMessage(errorMessage);
   }

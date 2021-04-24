@@ -260,48 +260,60 @@ describe("unZipCourse", () => {
   let tmpDirPath = "";
   let pathToUnzippedDir = "";
   let pathToZippedDir = "";
-  let zippedDir: Deno.File;
   const expectedName = "course";
   const prefix = `unZipCourse`;
 
   beforeEach(async () => {
     // Create a temporary directory
     tmpDirPath = await Deno.makeTempDir({ prefix });
-    console.log(`tmpDirPath: ${tmpDirPath}`);
     // Create a fake zip file
     const zip = new JSZip();
     zip.addFile("Hello.txt", "Hello World\n");
-    // TODO create a fake zip
-    /*
-
-    I think what I need to do is
-    1. create a tmpDir
-    1. create a sub directory
-    2. add a file
-    3. zip it up
-
-
-    But I'll try creating a basic file.zip first
-
-    */
 
     pathToZippedDir = `${tmpDirPath}/${expectedName}.zip`;
-    console.log(`pathToZippedDir: ${pathToZippedDir}`);
     await zip.writeZip(pathToZippedDir);
-    console.log("wrote zip");
-    // zippedDir = await Deno.create(pathToZippedDir);
     pathToUnzippedDir = `${tmpDirPath}/${expectedName}`;
-    console.log(`pathToUnzippedDir: ${pathToUnzippedDir}`);
     console.error = (x) => {
       errorMessage = x;
     };
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     // Clean up
-    // Deno.close(zippedDir.rid);
-    Deno.remove(tmpDirPath, { recursive: true });
+    const pathToZippedDirAsFile = await Deno.open(pathToZippedDir);
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+    const unzippedExists = await exists(pathToUnzippedDir);
+
+    if (unzippedExists) {
+      const pathToUnzippedDirAsFile = await Deno.open(pathToUnzippedDir);
+      Deno.close(pathToUnzippedDirAsFile.rid);
+      await Deno.remove(pathToUnzippedDir, { recursive: true });
+    }
+
+    Deno.close(pathToZippedDirAsFile.rid);
+    Deno.close(tmpDirPathAsFile.rid);
+    await Deno.remove(pathToZippedDir, { recursive: true });
+    await Deno.remove(tmpDirPath, { recursive: true });
+    // NOTE: not sure if the zip package I am using leaks
+    // or if it's unzipping or something
+    // but this closes all resources at the end of the test
+    const { resources, close } = Deno;
+    const openResources = resources();
+    for (const key in openResources) {
+      const resourceValue = openResources[key];
+      const standardDenoResources = ["stdin", "stdout", "stderr"];
+      if (!standardDenoResources.includes(resourceValue)) {
+        close(parseInt(key));
+      }
+    }
     console.error = error;
+  });
+
+  test("test should have access to a temp dir and a zip file", async () => {
+    const tempDirExists = await exists(tmpDirPath);
+    assertEquals(tempDirExists, true);
+    const zipExists = await exists(pathToZippedDir);
+    assertEquals(zipExists, true);
   });
 
   test("should error if zip doesn't exist", async () => {
@@ -311,14 +323,7 @@ describe("unZipCourse", () => {
     assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMessage}`);
   });
   test("should unzip the file in the directory", async () => {
-    console.log(`We are unzipping ${pathToZippedDir} to ${tmpDirPath}`);
     await unZipCourse(pathToZippedDir, pathToUnzippedDir);
-    console.log("inside the tmp dir");
-    for await (const dirEntry of Deno.readDir(tmpDirPath)) {
-      console.log(dirEntry.name);
-    }
-    // TODO this is a mess...
-    //
 
     // Check that it exists
     const unZippedExists = await exists(pathToUnzippedDir);
