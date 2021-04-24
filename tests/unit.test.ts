@@ -7,6 +7,7 @@ import {
   hasNextArg,
   isValidPaymentIdValue,
   logErrorMessage,
+  removeZip,
   verifyPurchase,
 } from "../lib/utils.ts";
 import {
@@ -17,7 +18,11 @@ import {
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
+import { JSZip } from "https://deno.land/x/jszip@0.9.0/mod.ts";
 import {
+  afterEach,
+  beforeEach,
   describe,
   test,
 } from "https://x.nest.land/hooked-describe@0.1.0/mod.ts";
@@ -205,7 +210,54 @@ describe("verifyPurchase", () => {
 });
 
 describe("removeZip", () => {
-  test("should do nothing if zip doesn't exist", () => {
+  let errorMessage: null | string;
+  const error = console.error;
+  let tmpDirPath = "";
+  let pathToZip = "";
+  const prefix = `removeZip`;
+  const expectedName = `course`;
+
+  beforeEach(async () => {
+    errorMessage = null;
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
+    // Create a temporary directory
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    // Create a fake zip file
+    const zip = new JSZip();
+    zip.addFile("Hello.txt", "Hello World\n");
+
+    pathToZip = `${tmpDirPath}/${expectedName}.zip`;
+    await zip.writeZip(pathToZip);
+  });
+
+  afterEach(async () => {
+    errorMessage = null;
+    console.error = error;
+    // Clean up
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+
+    Deno.close(tmpDirPathAsFile.rid);
+    await Deno.remove(tmpDirPath, { recursive: true });
+  });
+
+  test("should do nothing if zip doesn't exist", async () => {
     // do nothing
-  })
-})
+    const fakePath = "/fake/course.zip";
+    await removeZip(fakePath);
+    assertEquals(errorMessage, null);
+  });
+
+  test("should remove the zip if exists", async () => {
+    // Check before we remove it
+    let zipExists = await exists(pathToZip);
+    assertEquals(zipExists, true);
+
+    await removeZip(pathToZip);
+
+    zipExists = await exists(pathToZip);
+    assertEquals(zipExists, false);
+  });
+});

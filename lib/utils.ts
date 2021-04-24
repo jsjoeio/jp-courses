@@ -237,3 +237,15 @@ export async function unZipCourse(
     logErrorMessage(errorMessage);
   }
 }
+
+export async function removeZip(path: string) {
+  try {
+    const fileExists = await exists(path);
+    if (!fileExists) {
+      return;
+    }
+    await Deno.remove(path);
+  } catch (error) {
+    console.error(error);
+  }
+}
