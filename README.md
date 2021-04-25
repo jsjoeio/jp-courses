@@ -34,7 +34,15 @@ Runs the script with the `--help` flag.
 
 ### `test`
 
-To run the tests:
+Runs all the tests.
 ```sh
 denon test
 ```
+
+### `unit`
+
+Runs only the `tests/unit.test.ts`
+
+### `integration`
+
+Runs only the `tests/integration.test.ts`
