@@ -5,9 +5,31 @@ CROSS_MARK=$(printf '\342\235\214\n' | iconv -f UTF-8)
 
 set -eu
 
+check_for_cmd() {
+  local cmd=$1
+  local description=$2
+  local install_link=$3
+
+  if ! command -v $cmd &>/dev/null; then
+    echo "$cmd could not be found."
+    echo "$description"
+    echo "Install here: $install_link"
+    exit 1
+  fi
+}
+
 main() {
   echo "Running release..."
-  pwd
+
+  # Check that denon is installed
+  check_for_cmd denon "Used to run scripts and generate release" "https://github.com/denosaurs/denon#install"
+
+  # Check that gh is installed
+  check_for_cmd gh "Used to create a release" "https://cli.github.com/"
+  echo "$SUCCESS_CHECKMARK Environment meets requirements to generate release"
+
+  # Compile project for various architectures
+  denon compile
 }
 
 # TODOS
@@ -18,3 +40,4 @@ main() {
 # 5. Success
 
 main "$@"
+
