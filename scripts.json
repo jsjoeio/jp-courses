@@ -25,6 +25,14 @@
     "test": {
       "cmd": "deno test",
       "desc": "run all tests"
+    },
+    "unit": {
+      "cmd": "deno test tests/unit.test.ts",
+      "desc": "only run unit tests"
+    },
+    "integration": {
+      "cmd": "deno test tests/integration.test.ts",
+      "desc": "only run integration tests"
     }
   }
 }
