@@ -1,23 +1,24 @@
 {
   "watch": false,
+  "allow": ["net", "read", "write", "run", "env"],
   "$schema": "https://deno.land/x/denon@2.4.7/schema.json",
+  "unstable": true,
   "scripts": {
     "start": {
       "cmd": "deno run main.ts --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
-      "desc": "run project",
-      "allow": ["net", "read", "write", "run", "env"],
-      "unstable": true
+      "desc": "run project"
     },
     "help": {
       "cmd": "deno run main.ts --help",
-      "desc": "run project and print help message",
-      "unstable": true
+      "desc": "run project and print help message"
+    },
+    "dryRun": {
+      "cmd": "deno run main.ts --dryRun",
+      "desc": "run project in dryRun mode"
     },
     "test": {
       "cmd": "deno test",
-      "desc": "run all tests",
-      "allow": ["net", "read", "write", "run", "env"],
-      "unstable": true
+      "desc": "run all tests"
     }
   }
 }
