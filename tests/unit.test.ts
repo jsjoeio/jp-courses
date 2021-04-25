@@ -8,6 +8,7 @@ import {
   hasNextArg,
   isValidPaymentIdValue,
   logErrorMessage,
+  logFnNameAndDescription,
   removeZip,
   setDryRunEnv,
   verifyPurchase,
@@ -276,5 +277,28 @@ describe("DRY_RUN_ENV_KEY", () => {
     assertEquals(key, "0");
     // Clean up
     Deno.env.delete(DRY_RUN_ENV_KEY);
+  });
+});
+
+describe("logFnNameAndDescription", () => {
+  let message: string | null;
+  const log = console.log;
+  beforeEach(() => {
+    message = null;
+
+    console.log = (x) => {
+      message = x;
+    };
+  });
+  afterEach(() => {
+    console.log = log;
+    message = null;
+  });
+  test("should log to the console", () => {
+    const fnName = "doTheThing";
+    const description = "does the thing";
+    logFnNameAndDescription(fnName, description);
+    const expected = `Calling function "${fnName}" which "${description}"`;
+    assertEquals(message, expected);
   });
 });

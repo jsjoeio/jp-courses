@@ -270,3 +270,7 @@ export function getDryRunEnv() {
 export function setDryRunEnv() {
   Deno.env.set(DRY_RUN_ENV_KEY, "0");
 }
+
+export function logFnNameAndDescription(fnName: string, description: string) {
+  console.log(`Calling function "${fnName}" which "${description}"`);
+}
