@@ -145,12 +145,30 @@ describe("main", () => {
     Deno.env.delete(DRY_RUN_ENV_KEY);
   });
   test("should not set DRY_RUN env if flag not passed", async () => {
+    // Save the real console.log
+    // to restore later
+    let message = null;
+    let errorMessage = null;
+    const log = console.log;
+    const error = console.error;
+
+    console.log = (x) => {
+      message = x;
+    };
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
     // Call main with the --help flag
     await main(["--help"]);
 
     const DRY_RUN = getDryRunEnv;
 
+    console.log = log;
+    console.error = error;
     assertEquals(DRY_RUN, undefined);
+    assertEquals(message, HELP_MESSAGE);
+    assertEquals(errorMessage, null);
   });
   test("should log an error for unsupported flags", async () => {
     // Save the real console.error
