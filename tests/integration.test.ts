@@ -157,7 +157,7 @@ describe("main", () => {
 
     assertEquals(DRY_RUN, "0");
 
-    assertEquals(messages.length, 4);
+    assertEquals(messages.length, 5);
 
     console.log = log;
     // Clean up

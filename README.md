@@ -6,7 +6,7 @@ Lil CLI for my courses written in Deno.
 
 This CLI uses the following permissions:
 - `--allow-net`: allow network access
-  - the CLI sends a request to joeprevite.com to verify your purchase, then it downloads the course zip file from github.com.
+  - the CLI sends a request to joeprevite.com to verify your purchase, then it downloads the course zip file from raw.githubusercontent.com.
 - `--allow-write`
   - We unzip the course to your current directory (where you call the CLI).
 - `--allow-read`: allow file system read access

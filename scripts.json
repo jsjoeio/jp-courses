@@ -1,7 +1,7 @@
 {
   "watch": false,
   "allow": {
-    "net": "joeprevite.com,github.com",
+    "net": "joeprevite.com,raw.githubusercontent.com",
     "read": true,
     "write": true,
     "run": true,
