@@ -14,6 +14,10 @@
       "cmd": "deno run main.ts --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
       "desc": "run project"
     },
+    "compile": {
+      "cmd": "deno compile --lite --output jp-courses main.ts",
+      "desc": "compiles the project"
+    },
     "help": {
       "cmd": "deno run main.ts --help",
       "desc": "run project and print help message"
