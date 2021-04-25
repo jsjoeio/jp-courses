@@ -2,7 +2,15 @@ import { PaymentId, PaymentIdArg } from "./types.ts";
 
 export const DRY_RUN_ENV_KEY = "DRY_RUN";
 export const HELP_FLAGS = ["-h", "--help"] as const;
+export const DRY_RUN_FLAGS = ["--dry-run", "--dryRun"] as const;
 export const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
+export const DENO_PERMISSION_FLAGS = [
+  "--allow-net",
+  "--allow-read",
+  "--allow-write",
+  "--allow-env",
+  "--unstable",
+] as const;
 export const ERROR_MESSAGE_TEMPLATE = `❌ ERROR:`;
 export const UNSUPPORTED_ARG = (arg: string) =>
   `Received unsupported arg or flag ${arg}.
@@ -34,11 +42,16 @@ export const COULD_NOT_VERIFY_PAYMENT_ID = (value: PaymentId) =>
 export const HELP_MESSAGE = `
 Downloads the $COURSE_NAME for paid users.
 
+Uses the following permissions (Deno flags):
+  ${DENO_PERMISSION_FLAGS.join(", ")}
+  Read more about permissions in the README
+  https://github.com/jsjoeio/jp-courses-install#permissions
+
 USAGE:
-  $install_method [OPTIONS] (-i|--paymentId) <paymentId>
+  <$CLI_NAME> [OPTIONS] (-i|--paymentId) <paymentId>
 
 OPTIONS:
-  -d, --dry-run
+  ${DRY_RUN_FLAGS.join(", ")}
       Prints the commands for the download process without running them.
 
   ${HELP_FLAGS.join(", ")}
