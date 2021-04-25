@@ -37,6 +37,10 @@
     "integration": {
       "cmd": "deno test tests/integration.test.ts",
       "desc": "only run integration tests"
+    },
+    "release": {
+      "cmd": "sh ./scripts/release.sh",
+      "desc": "generates a new release"
     }
   }
 }
