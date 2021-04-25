@@ -140,7 +140,13 @@ export function isValidPaymentIdValue(value: string): boolean {
 
 export async function verifyPurchase(
   paymentId: PaymentId,
-): Promise<VerifyPurchase> {
+): Promise<VerifyPurchase | void> {
+  const isDryRun = getDryRunEnv() === "0";
+  if (isDryRun) {
+    const description = "Verifies purchase using paymentId";
+    logFnNameAndDescription(verifyPurchase.name, description);
+    return;
+  }
   const verifiedPurchase: VerifyPurchase = {
     verified: false,
     downloadLink: "",
@@ -175,6 +181,12 @@ export async function downloadZipFromLink(
   verifiedPurchase: VerifyPurchase,
   dir: string,
 ): Promise<void> {
+  const isDryRun = getDryRunEnv() === "0";
+  if (isDryRun) {
+    const description = "Verifies purchase using paymentId";
+    logFnNameAndDescription(downloadZipFromLink.name, description);
+    return;
+  }
   const { downloadLink, paymentId } = verifiedPurchase;
 
   try {
@@ -211,6 +223,12 @@ export async function unZipCourse(
   fileName: string,
   destinationPath = "./",
 ) {
+  const isDryRun = getDryRunEnv() === "0";
+  if (isDryRun) {
+    const description = "Verifies purchase using paymentId";
+    logFnNameAndDescription(unZipCourse.name, description);
+    return;
+  }
   try {
     const fileExists = await exists(fileName);
     if (!fileExists) {
@@ -244,6 +262,12 @@ export async function unZipCourse(
 }
 
 export async function removeZip(path: string) {
+  const isDryRun = getDryRunEnv() === "0";
+  if (isDryRun) {
+    const description = "Verifies purchase using paymentId";
+    logFnNameAndDescription(removeZip.name, description);
+    return;
+  }
   try {
     const fileExists = await exists(path);
     if (!fileExists) {

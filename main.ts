@@ -40,20 +40,23 @@ export async function main(args: string[]): Promise<void> {
   // If paymentId is an empty string here
   // then we can assume the case that nothing
   // was passed and just return
+  // only if it's not a dry run
   const paymentId = scriptFlagsAndArgs.argsPassed.paymentId;
-  if (paymentId.trim() === "") {
+  if (!isDryRunFlagEnabled && paymentId.trim() === "") {
     return;
   }
 
   const verifiedPurchase = await verifyPurchase(paymentId);
 
-  if (verifiedPurchase.error) {
+  if (verifiedPurchase && verifiedPurchase.error) {
     logErrorMessage(verifiedPurchase.error);
     return;
   }
 
-  // Download course to current directory
-  await downloadZipFromLink(verifiedPurchase, "./");
+  if (verifiedPurchase) {
+    // Download course to current directory
+    await downloadZipFromLink(verifiedPurchase, "./");
+  }
 
   // Unzip course to current directory
   await unZipCourse("course.zip", "./course");

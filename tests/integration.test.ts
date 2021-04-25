@@ -144,6 +144,24 @@ describe("main", () => {
     // Clean up
     Deno.env.delete(DRY_RUN_ENV_KEY);
   });
+  test("should log function calls if DRY_RUN is set", async () => {
+    const messages = [];
+    const log = console.log;
+    console.log = (x) => {
+      messages.push(x);
+    };
+
+    await main(["--dryRun"]);
+    const DRY_RUN = getDryRunEnv();
+
+    assertEquals(DRY_RUN, "0");
+
+    assertEquals(messages.length, 3);
+
+    console.log = log;
+    // Clean up
+    Deno.env.delete(DRY_RUN_ENV_KEY);
+  });
   test("should not set DRY_RUN env if flag not passed", async () => {
     // Save the real console.log
     // to restore later
