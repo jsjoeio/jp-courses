@@ -162,7 +162,7 @@ describe("main", () => {
     // Call main with the --help flag
     await main(["--help"]);
 
-    const DRY_RUN = getDryRunEnv;
+    const DRY_RUN = getDryRunEnv();
 
     console.log = log;
     console.error = error;
@@ -210,20 +210,6 @@ describe("main", () => {
     console.error = error;
     assertEquals(message, HELP_MESSAGE);
     assertEquals(errorMessage, null);
-  });
-  test("should download the course.zip to the directory it's running in", async () => {
-    const pathToZip = "./course.zip";
-    // Call main with the --help flag
-    await main([
-      "--paymentId",
-      "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
-    ]);
-
-    const zipExists = await exists(pathToZip);
-    assertEquals(zipExists, true);
-
-    // Clean up
-    Deno.remove(pathToZip);
   });
   test("should download, unzip the course and remove zip in the current directory", async () => {
     const pathToZip = "./course.zip";
