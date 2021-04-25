@@ -3,15 +3,18 @@
 // i.e. a simple function like checking for next arg
 import { Args, ScriptFlagsAndArgs } from "../lib/types.ts";
 import {
+  getDryRunEnv,
   handleArgs,
   hasNextArg,
   isValidPaymentIdValue,
   logErrorMessage,
   removeZip,
+  setDryRunEnv,
   verifyPurchase,
 } from "../lib/utils.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
+  DRY_RUN_ENV_KEY,
   ERROR_MESSAGE_TEMPLATE,
   INVALID_PAYMENT_ID_VALUE,
   MISSING_PAYMENT_ID_VALUE,
@@ -259,5 +262,19 @@ describe("removeZip", () => {
 
     zipExists = await exists(pathToZip);
     assertEquals(zipExists, false);
+  });
+});
+
+describe("DRY_RUN_ENV_KEY", () => {
+  test("should be undefined if not set", () => {
+    const key = getDryRunEnv();
+    assertEquals(key, undefined);
+  });
+  test("should be set to '0' if setDryRunEnv is called", () => {
+    setDryRunEnv();
+    const key = getDryRunEnv();
+    assertEquals(key, "0");
+    // Clean up
+    Deno.env.delete(DRY_RUN_ENV_KEY);
   });
 });

@@ -1,6 +1,7 @@
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DIRECTORY_NOT_FOUND,
+  DRY_RUN_ENV_KEY,
   ERROR_MESSAGE_TEMPLATE,
   FILE_NOT_FOUND,
   INVALID_PAYMENT_ID_VALUE,
@@ -252,4 +253,20 @@ export async function removeZip(path: string) {
   } catch (error) {
     console.error(error);
   }
+}
+
+/**
+ * Returns the environment variable
+ * for DRY_RUN_ENV_KEY
+ */
+export function getDryRunEnv() {
+  return Deno.env.get(DRY_RUN_ENV_KEY);
+}
+
+/**
+ * Sets the environment variable
+ * DRY_RUN_ENV_KEY to "0"
+ */
+export function setDryRunEnv() {
+  Deno.env.set(DRY_RUN_ENV_KEY, "0");
 }
