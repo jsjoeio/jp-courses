@@ -1,6 +1,12 @@
 {
   "watch": false,
-  "allow": ["net", "read", "write", "run", "env"],
+  "allow": {
+    "net": "joeprevite.com,github.com",
+    "read": true,
+    "write": true,
+    "run": true,
+    "env": "DRY_RUN"
+  },
   "$schema": "https://deno.land/x/denon@2.4.7/schema.json",
   "unstable": true,
   "scripts": {
