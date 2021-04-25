@@ -1,4 +1,4 @@
-import { HELP_MESSAGE } from "./lib/constants.ts";
+import { HELP_MESSAGE, SUCCESS_MESSAGE } from "./lib/constants.ts";
 import {
   downloadZipFromLink,
   handleArgs,
@@ -63,6 +63,8 @@ export async function main(args: string[]): Promise<void> {
 
   // Remove zip
   await removeZip("./course.zip");
+
+  console.log(SUCCESS_MESSAGE);
 }
 
 await main(Deno.args);

@@ -16,6 +16,7 @@ import {
   FILE_NOT_FOUND,
   HELP_MESSAGE,
   MISSING_DOWNLOAD_LINK,
+  SUCCESS_MESSAGE,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
@@ -229,9 +230,15 @@ describe("main", () => {
     assertEquals(message, HELP_MESSAGE);
     assertEquals(errorMessage, null);
   });
-  test("should download, unzip the course and remove zip in the current directory", async () => {
+  test("should download, unzip the course, remove zip and log success message", async () => {
+    let message = null;
+    const log = console.log;
     const pathToZip = "./course.zip";
     const pathToUnzipped = "./course";
+
+    console.log = (x) => {
+      message = x;
+    };
     // Call main with the --help flag
     await main([
       "--paymentId",
@@ -244,6 +251,9 @@ describe("main", () => {
     const unZippedExists = await exists(pathToUnzipped);
     assertEquals(unZippedExists, true);
 
+    assertEquals(message, SUCCESS_MESSAGE);
+
+    console.log = log;
     // Clean up
     Deno.remove(pathToUnzipped, { recursive: true });
   });

@@ -39,6 +39,7 @@ export const FAILED_TO_DOWNLOAD_ZIP = `Failed to download zip.
 export const COULD_NOT_VERIFY_PAYMENT_ID = (value: PaymentId) =>
   `Could not verify purchase using payment id: ${value}
    Please contact joe at joe previte [dot com]`;
+export const SUCCESS_MESSAGE = `✔ Successfully downloaded course! 🎉`;
 export const HELP_MESSAGE = `
 Downloads the $COURSE_NAME for paid users.
 
