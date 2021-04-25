@@ -196,7 +196,7 @@ describe("verifyPurchase", () => {
   test("verifyPurchase should return an error if called with an empty string", async () => {
     const paymentId = "";
     const verifiedPurchase = await verifyPurchase(paymentId);
-    const actualErrorMessage = verifiedPurchase && verifiedPurchase.error;
+    const actualErrorMessage = verifiedPurchase.error;
     const expected = MISSING_PAYMENT_ID_VALUE("--paymentId");
 
     assertEquals(actualErrorMessage, expected);
@@ -205,8 +205,7 @@ describe("verifyPurchase", () => {
     const paymentId =
       "cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i";
     const verifiedPurchase = await verifyPurchase(paymentId);
-    const actualDownloadLink = verifiedPurchase &&
-      verifiedPurchase.downloadLink;
+    const actualDownloadLink = verifiedPurchase.downloadLink;
     const expected =
       "https://raw.githubusercontent.com/jsjoeio/install-scripts/main/fake-course.zip";
 

@@ -48,7 +48,7 @@ export async function main(args: string[]): Promise<void> {
 
   const verifiedPurchase = await verifyPurchase(paymentId);
 
-  if (verifiedPurchase && verifiedPurchase.error) {
+  if (verifiedPurchase.error) {
     logErrorMessage(verifiedPurchase.error);
     return;
   }

@@ -140,19 +140,22 @@ export function isValidPaymentIdValue(value: string): boolean {
 
 export async function verifyPurchase(
   paymentId: PaymentId,
-): Promise<VerifyPurchase | void> {
+): Promise<VerifyPurchase> {
   const isDryRun = getDryRunEnv() === "0";
-  if (isDryRun) {
-    const description = "Verifies purchase using paymentId";
-    logFnNameAndDescription(verifyPurchase.name, description);
-    return;
-  }
   const verifiedPurchase: VerifyPurchase = {
     verified: false,
     downloadLink: "",
     error: null,
     paymentId,
   };
+
+  if (isDryRun) {
+    const description =
+      "verifies purchase using paymentId and making request to joeprevite.com";
+    logFnNameAndDescription(verifyPurchase.name, description);
+    verifiedPurchase.downloadLink = "https://github.com";
+    return verifiedPurchase;
+  }
 
   if (paymentId.trim() === "") {
     verifiedPurchase.error = MISSING_PAYMENT_ID_VALUE("--paymentId");
@@ -183,7 +186,7 @@ export async function downloadZipFromLink(
 ): Promise<void> {
   const isDryRun = getDryRunEnv() === "0";
   if (isDryRun) {
-    const description = "Verifies purchase using paymentId";
+    const description = "downloads the course zip file from github.com";
     logFnNameAndDescription(downloadZipFromLink.name, description);
     return;
   }
@@ -225,7 +228,8 @@ export async function unZipCourse(
 ) {
   const isDryRun = getDryRunEnv() === "0";
   if (isDryRun) {
-    const description = "Verifies purchase using paymentId";
+    const description =
+      "unzips the course into the currently directory under 'course'";
     logFnNameAndDescription(unZipCourse.name, description);
     return;
   }
@@ -264,7 +268,8 @@ export async function unZipCourse(
 export async function removeZip(path: string) {
   const isDryRun = getDryRunEnv() === "0";
   if (isDryRun) {
-    const description = "Verifies purchase using paymentId";
+    const description =
+      "removes the course.zip file from the current directory";
     logFnNameAndDescription(removeZip.name, description);
     return;
   }
