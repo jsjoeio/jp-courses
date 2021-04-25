@@ -4,6 +4,7 @@ import {
   handleArgs,
   logErrorMessage,
   removeZip,
+  setDryRunEnv,
   unZipCourse,
   verifyPurchase,
 } from "./lib/utils.ts";
@@ -18,11 +19,16 @@ export async function main(args: string[]): Promise<void> {
   const scriptFlagsAndArgs: ScriptFlagsAndArgs = handleArgs(args as Args[]);
 
   const isHelpFlagEnabled = scriptFlagsAndArgs.flagsEnabled.help;
+  const isDryRunFlagEnabled = scriptFlagsAndArgs.flagsEnabled.dryRun;
   const hasErrors = scriptFlagsAndArgs.errors.length > 0;
 
   if (isHelpFlagEnabled) {
     console.log(HELP_MESSAGE);
     return;
+  }
+
+  if (isDryRunFlagEnabled) {
+    setDryRunEnv();
   }
 
   if (hasErrors) {

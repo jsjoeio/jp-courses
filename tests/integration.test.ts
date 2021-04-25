@@ -2,11 +2,16 @@
 // Anything that isn't a full e2e but might rely on something else
 // i.e. main because it calls other functions
 import { main } from "../main.ts";
-import { downloadZipFromLink, unZipCourse } from "../lib/utils.ts";
+import {
+  downloadZipFromLink,
+  getDryRunEnv,
+  unZipCourse,
+} from "../lib/utils.ts";
 import { VerifyPurchase } from "../lib/types.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DIRECTORY_NOT_FOUND,
+  DRY_RUN_ENV_KEY,
   ERROR_MESSAGE_TEMPLATE,
   FILE_NOT_FOUND,
   HELP_MESSAGE,
@@ -120,6 +125,32 @@ describe("main", () => {
     console.error = error;
     assertEquals(message, HELP_MESSAGE);
     assertEquals(errorMessage, null);
+  });
+  test("should take a --dry-run flag and set DRY_RUN", async () => {
+    await main(["--dry-run"]);
+    const DRY_RUN = getDryRunEnv();
+
+    assertEquals(DRY_RUN, "0");
+
+    // Clean up
+    Deno.env.delete(DRY_RUN_ENV_KEY);
+  });
+  test("should take a --dryRun flag and set DRY_RUN", async () => {
+    await main(["--dryRun"]);
+    const DRY_RUN = getDryRunEnv();
+
+    assertEquals(DRY_RUN, "0");
+
+    // Clean up
+    Deno.env.delete(DRY_RUN_ENV_KEY);
+  });
+  test("should not set DRY_RUN env if flag not passed", async () => {
+    // Call main with the --help flag
+    await main(["--help"]);
+
+    const DRY_RUN = getDryRunEnv;
+
+    assertEquals(DRY_RUN, undefined);
   });
   test("should log an error for unsupported flags", async () => {
     // Save the real console.error
