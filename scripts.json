@@ -2,8 +2,8 @@
   "watch": false,
   "allow": {
     "net": "joeprevite.com,raw.githubusercontent.com",
-    "read": true,
-    "write": true,
+    "read": "/var,/",
+    "write": "/var,/",
     "run": true,
     "env": "DRY_RUN"
   },

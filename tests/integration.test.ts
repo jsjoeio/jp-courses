@@ -269,6 +269,7 @@ describe("downloadZipFromLink", () => {
 
   beforeEach(async () => {
     tmpDirPath = await Deno.makeTempDir({ prefix });
+    console.log("tmpDirPath", tmpDirPath);
     pathToZip = `${tmpDirPath}/${expectedName}`;
   });
   afterEach(() => {
