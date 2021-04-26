@@ -15,7 +15,7 @@
       "desc": "run project"
     },
     "compile": {
-      "cmd": "deno compile --lite --output jp-courses main.ts",
+      "cmd": "deno compile --lite",
       "desc": "compiles the project"
     },
     "help": {

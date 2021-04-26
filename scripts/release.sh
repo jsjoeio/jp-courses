@@ -18,6 +18,16 @@ check_for_cmd() {
   fi
 }
 
+compile_to_os() {
+  local OS=$1
+  local PATH_TO_OS_DIR="./dist/$OS"
+  local CLI_NAME="jp-courses"
+
+  mkdir -p "$PATH_TO_OS_DIR"
+
+  denon compile --target "$OS" --quiet --output "$PATH_TO_OS_DIR/$CLI_NAME" main.ts
+}
+
 main() {
   echo "Running release..."
 
@@ -26,15 +36,22 @@ main() {
 
   # Check that gh is installed
   check_for_cmd gh "Used to create a release" "https://cli.github.com/"
+
+  # Check for mkdir
+  check_for_cmd mkdir "Used to create directories" "https://linux.die.net/man/1/mkdir"
+
   echo "$SUCCESS_CHECKMARK Environment meets requirements to generate release"
 
   # Compile project for various architectures
-  denon compile
+  compile_to_os "x86_64-unknown-linux-gnu"
+  compile_to_os "x86_64-pc-windows-msvc"
+  compile_to_os "x86_64-apple-darwin"
+  compile_to_os "aarch64-apple-darwin"
+
+  echo "$SUCCESS_CHECKMARK Compiled CLI to various architectures"
 }
 
 # TODOS
-# 1. Compile project for various archiectures x86_64-unknown-linux-gnu, x86_64-pc-windows-msvc, x86_64-apple-darwin, aarch64-apple-darwin
-# 2. Move files into /dist folder
 # 3. Prompt for tag and release notes
 # 4. Check for `gh` and then run `gh release create <tag> ./dist/* -n <notes>`
 # 5. Success
