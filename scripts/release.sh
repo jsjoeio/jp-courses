@@ -48,13 +48,22 @@ main() {
   compile_to_os "x86_64-apple-darwin"
   compile_to_os "aarch64-apple-darwin"
 
-  echo "$SUCCESS_CHECKMARK Compiled CLI to various architectures"
-}
+  echo "$SUCCESS_CHECKMARK Compiled to various architectures"
 
-# TODOS
-# 3. Prompt for tag and release notes
-# 4. Check for `gh` and then run `gh release create <tag> ./dist/* -n <notes>`
-# 5. Success
+  read -r -p "What is the release version? " RELEASE_VERSION
+  read -r -p "Release notes? " RELEASE_NOTES
+
+  echo "Release version: $RELEASE_VERSION"
+  echo "Notes for release: $RELEASE_NOTES"
+  read -p "Confirm? [Y/n]" -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    echo "doing thing"
+      gh release create "$RELEASE_VERSION" ./dist/* -n "$RELEASE_NOTES"
+      echo "$SUCCESS_CHECKMARK Successfully released v${RELEASE_VERSION}!"
+  fi
+}
 
 main "$@"
 
