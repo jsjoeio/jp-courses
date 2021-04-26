@@ -20,12 +20,12 @@ check_for_cmd() {
 
 compile_to_os() {
   local OS=$1
-  local PATH_TO_OS_DIR="./dist/$OS"
+  local CLI_VERSION=$2
+  local PATH_TO_DIST_DIR="./dist"
   local CLI_NAME="jp-courses"
 
-  mkdir -p "$PATH_TO_OS_DIR"
 
-  denon compile --target "$OS" --quiet --output "$PATH_TO_OS_DIR/$CLI_NAME" main.ts
+  denon compile --target "$OS" --quiet --output "$PATH_TO_DIST_DIR/$CLI_NAME-v$CLI_VERSION-$OS" main.ts
 }
 
 main() {
@@ -37,31 +37,30 @@ main() {
   # Check that gh is installed
   check_for_cmd gh "Used to create a release" "https://cli.github.com/"
 
-  # Check for mkdir
-  check_for_cmd mkdir "Used to create directories" "https://linux.die.net/man/1/mkdir"
-
   echo "$SUCCESS_CHECKMARK Environment meets requirements to generate release"
-
-  # Compile project for various architectures
-  compile_to_os "x86_64-unknown-linux-gnu"
-  compile_to_os "x86_64-pc-windows-msvc"
-  compile_to_os "x86_64-apple-darwin"
-  compile_to_os "aarch64-apple-darwin"
-
-  echo "$SUCCESS_CHECKMARK Compiled to various architectures"
 
   read -r -p "What is the release version? " RELEASE_VERSION
   read -r -p "Release notes? " RELEASE_NOTES
 
+  # Compile project for various architectures
+  compile_to_os "x86_64-unknown-linux-gnu" "$RELEASE_VERSION"
+  compile_to_os "x86_64-pc-windows-msvc" "$RELEASE_VERSION"
+  compile_to_os "x86_64-apple-darwin" "$RELEASE_VERSION"
+  compile_to_os "aarch64-apple-darwin" "$RELEASE_VERSION"
+
+  # We need to make sure the executables are _actually_ executable
+  for FILE in "./dist"; do chmod +x $FILE; done
+
+  echo "$SUCCESS_CHECKMARK Compiled to various architectures"
+
   echo "Release version: $RELEASE_VERSION"
   echo "Notes for release: $RELEASE_NOTES"
-  read -p "Confirm? [Y/n]" -n 1 -r
+  read -p "Confirm? [Y/n] " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]]
   then
-    echo "doing thing"
-      gh release create "$RELEASE_VERSION" ./dist/* -n "$RELEASE_NOTES"
-      echo "$SUCCESS_CHECKMARK Successfully released v${RELEASE_VERSION}!"
+    gh release create "$RELEASE_VERSION" ./dist/* -n "$RELEASE_NOTES"
+    echo "$SUCCESS_CHECKMARK Successfully released v${RELEASE_VERSION}!"
   fi
 }
 
