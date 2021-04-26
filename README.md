@@ -2,6 +2,12 @@
 
 Lil CLI for my courses written in Deno.
 
+## Quickstart
+
+1. Go to [Releases](https://github.com/jsjoeio/jp-courses-install/releases)
+2. Download for your OS (aarch64-apple-darwin is for macOS with M1)
+3. 
+
 ## Permissions
 
 This CLI uses the following permissions:
