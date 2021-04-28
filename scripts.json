@@ -41,6 +41,10 @@
     "release": {
       "cmd": "sh ./scripts/release.sh",
       "desc": "generates a new release"
+    },
+    "install": {
+      "cmd": "sh ./scripts/install.sh",
+      "desc": "installs cli from GitHub release"
     }
   }
 }
