@@ -1,4 +1,5 @@
 {
+  "version": "0.0.3",
   "watch": false,
   "allow": {
     "net": "joeprevite.com,raw.githubusercontent.com",
@@ -41,6 +42,10 @@
     "release": {
       "cmd": "sh ./scripts/release.sh",
       "desc": "generates a new release"
+    },
+    "build": {
+      "cmd": "sh ./scripts/build.sh",
+      "desc": "builds and compiles project"
     },
     "install": {
       "cmd": "sh ./scripts/install.sh",
