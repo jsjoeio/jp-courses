@@ -18,14 +18,36 @@ check_for_cmd() {
   fi
 }
 
+# This function does three things
+# 1. compiles CLI to target OS
+# 2. makes file executable
+# 3. zips up folder
 compile_to_os() {
   local OS=$1
   local CLI_VERSION=$2
   local PATH_TO_DIST_DIR="./dist"
   local CLI_NAME="jp-courses"
+  local FOLDER="$PATH_TO_DIST_DIR/$CLI_NAME-v$CLI_VERSION-$OS"
+  local OUTPUT_PATH="$FOLDER/$CLI_NAME"
 
+  # If folder doesn't exist, make it
+  if [ ! -d "$FOLDER" ];
+  then
+    mkdir -p "$FOLDER"
+  fi
 
-  denon compile --target "$OS" --quiet --output "$PATH_TO_DIST_DIR/$CLI_NAME-v$CLI_VERSION-$OS" main.ts
+  denon compile --target "$OS" --quiet --output "$OUTPUT_PATH" main.ts
+
+  # Make file executable
+  # We loop because we don't know the direct file path
+  # i.e. Windows has .exe but mac doesn't
+  for FILE in $FOLDER; do chmod +x "$FILE"; done
+  # Zip folder so file permissions are preserved
+  # when uploading to GitHub releases
+  zip -r "$FOLDER".zip "$FOLDER"
+
+  # Delete the folder
+  rm -rf "$FOLDER"
 }
 
 main() {
@@ -48,8 +70,6 @@ main() {
   compile_to_os "x86_64-apple-darwin" "$RELEASE_VERSION"
   compile_to_os "aarch64-apple-darwin" "$RELEASE_VERSION"
 
-  # We need to make sure the executables are _actually_ executable
-  for FILE in "./dist"; do chmod +x $FILE; done
 
   echo "$SUCCESS_CHECKMARK Compiled to various architectures"
 
