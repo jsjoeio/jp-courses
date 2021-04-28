@@ -45,6 +45,7 @@ compile_to_os() {
   if [ ! -d "$FOLDER" ];
   then
     mkdir -p "$FOLDER"
+    echo "Made folder: $FOLDER"
   fi
 
   denon compile --target "$OS" --quiet --output "$OUTPUT_PATH" main.ts
@@ -52,7 +53,17 @@ compile_to_os() {
   # Make file executable
   # We loop because we don't know the direct file path
   # i.e. Windows has .exe but mac doesn't
-  for FILE in $FOLDER; do chmod +x "$FILE"; done
+  # By quoting it, we read the folder name right, but our loop
+  # only runs once.
+  # that's
+  # shellcheck disable=SC2066
+  for FILE in "$FOLDER"
+  do
+    echo "chmod'ing file: $FILE"
+    # take action on each file. $f store current file name
+    chmod +x "$FILE"
+  done
+
   # Zip folder so file permissions are preserved
   # when uploading to GitHub releases
   zip -r "$FOLDER".zip "$FOLDER"
@@ -72,7 +83,6 @@ main() {
 
   VERSION=$(get_version)
 
-  echo "$VERSION"
   # Compile project for various architectures
   compile_to_os "x86_64-unknown-linux-gnu" "$VERSION"
   compile_to_os "x86_64-pc-windows-msvc" "$VERSION"
