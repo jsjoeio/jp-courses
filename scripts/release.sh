@@ -18,36 +18,15 @@ check_for_cmd() {
   fi
 }
 
-# This function does three things
-# 1. compiles CLI to target OS
-# 2. makes file executable
-# 3. zips up folder
-compile_to_os() {
-  local OS=$1
-  local CLI_VERSION=$2
-  local PATH_TO_DIST_DIR="./dist"
-  local CLI_NAME="jp-courses"
-  local FOLDER="$PATH_TO_DIST_DIR/$CLI_NAME-v$CLI_VERSION-$OS"
-  local OUTPUT_PATH="$FOLDER/$CLI_NAME"
+# Source: https://gist.github.com/DarrenN/8c6a5b969481725a4413
+get_version() {
+  local VERSION=$(cat scripts.json \
+  | grep version \
+  | head -1 \
+  | awk -F: '{ print $2 }' \
+  | sed 's/[",]//g')
 
-  # If folder doesn't exist, make it
-  if [ ! -d "$FOLDER" ];
-  then
-    mkdir -p "$FOLDER"
-  fi
-
-  denon compile --target "$OS" --quiet --output "$OUTPUT_PATH" main.ts
-
-  # Make file executable
-  # We loop because we don't know the direct file path
-  # i.e. Windows has .exe but mac doesn't
-  for FILE in $FOLDER; do chmod +x "$FILE"; done
-  # Zip folder so file permissions are preserved
-  # when uploading to GitHub releases
-  zip -r "$FOLDER".zip "$FOLDER"
-
-  # Delete the folder
-  rm -rf "$FOLDER"
+  echo "$VERSION"
 }
 
 main() {
@@ -61,15 +40,11 @@ main() {
 
   echo "$SUCCESS_CHECKMARK Environment meets requirements to generate release"
 
-  read -r -p "What is the release version? " RELEASE_VERSION
+  RELEASE_VERSION=$(get_version)
   read -r -p "Release notes? " RELEASE_NOTES
 
   # Compile project for various architectures
-  compile_to_os "x86_64-unknown-linux-gnu" "$RELEASE_VERSION"
-  compile_to_os "x86_64-pc-windows-msvc" "$RELEASE_VERSION"
-  compile_to_os "x86_64-apple-darwin" "$RELEASE_VERSION"
-  compile_to_os "aarch64-apple-darwin" "$RELEASE_VERSION"
-
+  denon build
 
   echo "$SUCCESS_CHECKMARK Compiled to various architectures"
 
