@@ -45,7 +45,7 @@ compile_to_os() {
   if [ ! -d "$FOLDER" ];
   then
     mkdir -p "$FOLDER"
-    echo "Made folder: $FOLDER"
+    echo "📁 Made folder: $FOLDER"
   fi
 
   denon compile --target "$OS" --quiet --output "$OUTPUT_PATH" main.ts
@@ -59,30 +59,105 @@ compile_to_os() {
   # shellcheck disable=SC2066
   for FILE in "$FOLDER"
   do
-    echo "chmod'ing file: $FILE"
+    echo "🆗 chmod'ing file: $FILE"
     # take action on each file. $f store current file name
     chmod +x "$FILE"
   done
 
   # Zip folder so file permissions are preserved
   # when uploading to GitHub releases
-  zip -r "$FOLDER".zip "$FOLDER"
+  echo "🤐 Zipping up folder"
+  zip -qq -r "$FOLDER".zip "$FOLDER"
 
+  echo "🧹 Removing folder"
   # Delete the folder
   rm -rf "$FOLDER"
 }
 
-main() {
-  echo "Running release..."
+get_target_os() {
+  local OS_NAME="linux"
 
+  # Credit: https://stackoverflow.com/a/18434831/3015595
+  case $(uname | tr '[:upper:]' '[:lower:]') in
+    linux*)
+      OS_NAME="linux"
+      ;;
+    darwin*)
+      OS_NAME="osx"
+      ;;
+    msys*)
+      OS_NAME="windows"
+      ;;
+    *)
+      OS_NAME="notset"
+      ;;
+  esac
+
+  echo "$OS_NAME"
+}
+
+handle_compile_to_target_os() {
+  local OS_NAME=$1
+  local VERSION=$2
+
+  if [ "$OS_NAME" = "linux" ]; then
+    echo "🔍 Detected $OS_NAME-like OS."
+    local OS_VERSION="x86_64-unknown-linux-gnu"
+    echo "📦 Compiling $OS_VERSION version of project"
+    compile_to_os "$OS_VERSION" "$VERSION"
+  elif [ "$OS_NAME" = "osx" ]; then
+    if [ "$(uname -m)" = 'arm64' ]; then
+      echo "🔍 Detected $OS_NAME-like OS."
+      local OS_VERSION="aarch64-apple-darwin"
+      echo "📦 Compiling $OS_VERSION version of project"
+      compile_to_os "aarch64-apple-darwin" "$VERSION"
+    else
+      echo "🔍 Detected $OS_NAME-like OS."
+      local OS_VERSION="x86_64-apple-darwin"
+      echo "📦 Compiling $OS_VERSION version of project"
+      compile_to_os "x86_64-apple-darwin" "$VERSION"
+    fi
+  elif [ "$OS_NAME" = "windows" ]; then
+    echo "🔍 Detected $OS_NAME-like OS."
+    local OS_VERSION="x86_64-pc-windows-msvc"
+    echo "📦 Compiling $OS_VERSION version of project"
+    compile_to_os "x86_64-pc-windows-msvc" "$VERSION"
+  elif [ "$OS_NAME" = "notset" ]; then
+    echo "❓ Couldn't determine OS. Assuming linux-like"
+    local OS_VERSION="x86_64-unknown-linux-gnu"
+    echo "📦 Compiling $OS_VERSION version of project"
+    compile_to_os "x86_64-unknown-linux-gnu" "$VERSION"
+  else
+    echo "❓ Couldn't determine OS. Assuming linux-like"
+    local OS_VERSION="x86_64-unknown-linux-gnu"
+    echo "📦 Compiling $OS_VERSION version of project"
+    compile_to_os "x86_64-unknown-linux-gnu" "$VERSION"
+  fi
+
+}
+
+main() {
   # Check for environment requirements
   check_for_cmd denon "Used to run scripts and generate release" "https://github.com/denosaurs/denon#install"
   check_for_cmd jq "Used to parse JSON" "https://stedolan.github.io/jq/download/"
+  check_for_cmd zip "Used to create zip" "https://linux.die.net/man/1/zip"
+  check_for_cmd mkdir "Used to create a folder" "https://linux.die.net/man/1/mkdir"
+  check_for_cmd chmod "Used to give file permissions" "https://linux.die.net/man/1/chmod"
 
   echo "$SUCCESS_CHECKMARK Environment meets requirements to build project"
+  echo "🛠️  Building project"
 
   # | xargs will trim any whitespace
   VERSION=$(get_version | xargs)
+
+  if [ "$1" = "local" ];
+  then
+    echo "🚲 Only building for local OS"
+    OS_NAME=$(get_target_os)
+    handle_compile_to_target_os "$OS_NAME" "$VERSION"
+    echo "$SUCCESS_CHECKMARK Built and compiled project"
+    exit 0
+  fi
 
   # Compile project for various architectures
   compile_to_os "x86_64-unknown-linux-gnu" "$VERSION"

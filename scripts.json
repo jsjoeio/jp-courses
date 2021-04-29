@@ -17,7 +17,9 @@
     },
     "compile": {
       "cmd": "deno compile --lite",
-      "desc": "compiles the project"
+      "desc": "compiles the project",
+      "quiet": true,
+      "debug": false
     },
     "help": {
       "cmd": "deno run main.ts --help",
