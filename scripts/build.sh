@@ -81,7 +81,8 @@ main() {
 
   echo "$SUCCESS_CHECKMARK Environment meets requirements to build project"
 
-  VERSION=$(get_version)
+  # | xargs will trim any whitespace
+  VERSION=$(get_version | xargs)
 
   # Compile project for various architectures
   compile_to_os "x86_64-unknown-linux-gnu" "$VERSION"
