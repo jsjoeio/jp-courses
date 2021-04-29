@@ -6,7 +6,9 @@ Lil CLI for my courses written in Deno.
 
 1. Go to [Releases](https://github.com/jsjoeio/jp-courses-install/releases)
 2. Download for your OS (aarch64-apple-darwin is for macOS with M1)
-3. 
+3. Unzip
+4. `chmod +x jp-courses`
+5. Run `--help` or `--dryRun` to get started
 
 ## Permissions
 
