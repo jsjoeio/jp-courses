@@ -39,6 +39,10 @@
       "cmd": "deno test tests/integration.test.ts",
       "desc": "only run integration tests"
     },
+    "e2e": {
+      "cmd": "deno test tests/e2e.test.ts",
+      "desc": "only run e2e tests"
+    },
     "release": {
       "cmd": "sh ./scripts/release.sh",
       "desc": "generates a new release"
@@ -50,6 +54,10 @@
     "install": {
       "cmd": "sh ./scripts/install.sh",
       "desc": "installs cli from GitHub release"
+    },
+    "clean": {
+      "cmd": "sh ./scripts/clean.sh",
+      "desc": "deletes everything in /dist"
     }
   }
 }
