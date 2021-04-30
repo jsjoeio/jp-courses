@@ -64,7 +64,9 @@ compile_to_os() {
   # Zip folder so file permissions are preserved
   # when uploading to GitHub releases
   echo "🤐 Zipping up folder"
-  zip -qq -r "$FOLDER".zip "$FOLDER"
+  # -j ignores all directories
+  # so when they unzip, it's just the file
+  zip -j -qq "$FOLDER".zip "$FOLDER"/*
 
   echo "🧹 Removing folder"
   # Delete the folder
