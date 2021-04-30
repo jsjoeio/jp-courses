@@ -43,6 +43,8 @@ main() {
   RELEASE_VERSION=$(get_version)
   read -r -p "Release notes? " RELEASE_NOTES
 
+  # Make sure dist is empty
+  denon clean
   # Compile project for various architectures
   denon build
 
