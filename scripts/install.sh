@@ -68,6 +68,7 @@ download_cli() {
   curl -s "https://github.com/jsjoeio/jp-courses-install/releases/download/$CLI_VERSION/jp-courses-v$CLI_VERSION-$OS_VERSION.zip" -L -o jp-courses.zip
 }
 
+# Credit: https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c#gistcomment-2758860
 get_latest_release_version() {
   local VERSION=$(curl -fsSLI -o /dev/null -w %{url_effective} https://github.com/jsjoeio/jp-courses-install/releases/latest | sed 's@.*/@@' | xargs)
   echo "$VERSION"
@@ -85,7 +86,7 @@ main() {
 
   # TODO don't put it inside dist/
   # Make it executable
-  chmod +x dist/jp-courses-*/jp-courses
+  chmod +x jp-courses/jp-courses
 
   # Remove zip
   rm jp-courses.zip
