@@ -149,7 +149,7 @@ main() {
   # | xargs will trim any whitespace
   VERSION=$(get_version | xargs)
 
-  if [ "$1" = "local" ];
+  if [ "${1:-}" = "local" ];
   then
     echo "🚲 Only building for local OS"
     OS_NAME=$(get_target_os)
