@@ -40,7 +40,8 @@ main() {
 
   echo "$SUCCESS_CHECKMARK Environment meets requirements to generate release"
 
-  RELEASE_VERSION=$(get_version)
+  # | xargs will trim any whitespace
+  RELEASE_VERSION=$(get_version | xargs)
   read -r -p "Release notes? " RELEASE_NOTES
 
   # Make sure dist is empty
