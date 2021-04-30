@@ -1,8 +1,5 @@
 #!/bin/sh
 
-SUCCESS_CHECKMARK=$(printf '\342\234\224\n' | iconv -f UTF-8)
-CROSS_MARK=$(printf '\342\235\214\n' | iconv -f UTF-8)
-
 set -eu
 
 check_for_cmd() {
@@ -144,7 +141,7 @@ main() {
   check_for_cmd mkdir "Used to create a folder" "https://linux.die.net/man/1/mkdir"
   check_for_cmd chmod "Used to give file permissions" "https://linux.die.net/man/1/chmod"
 
-  echo "$SUCCESS_CHECKMARK Environment meets requirements to build project"
+  echo "✅ Environment meets requirements to build project"
   echo "🛠️  Building project"
 
   # | xargs will trim any whitespace
@@ -155,7 +152,7 @@ main() {
     echo "🚲 Only building for local OS"
     OS_NAME=$(get_target_os)
     handle_compile_to_target_os "$OS_NAME" "$VERSION"
-    echo "$SUCCESS_CHECKMARK Built and compiled project"
+    echo "✅ Built and compiled project"
     exit 0
   fi
 
@@ -166,7 +163,7 @@ main() {
   compile_to_os "aarch64-apple-darwin" "$VERSION"
 
 
-  echo "$SUCCESS_CHECKMARK Built and compiled project"
+  echo "✅ Built and compiled project"
 }
 
 main "$@"
