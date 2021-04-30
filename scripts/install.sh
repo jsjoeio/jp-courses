@@ -82,7 +82,7 @@ main() {
   handle_install_to_target_os "$OS_NAME" "$VERSION"
 
   # Unzip it
-  unzip -qq jp-courses.zip
+  unzip -qq jp-courses.zip -d jp-courses
 
   # TODO don't put it inside dist/
   # Make it executable
@@ -91,7 +91,8 @@ main() {
   # Remove zip
   rm jp-courses.zip
 
-  echo "✅ Complete"
+  echo "🎉 Downloaded v$VERSION"
+  echo "✅ Complete."
 }
 
 main "$@"
