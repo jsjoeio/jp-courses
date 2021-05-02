@@ -12,8 +12,12 @@
   "unstable": true,
   "scripts": {
     "start": {
+      "cmd": "deno run main.ts start",
+      "desc": "start course"
+    },
+    "download": {
       "cmd": "deno run main.ts --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i",
-      "desc": "run project"
+      "desc": "download course"
     },
     "compile": {
       "cmd": "deno compile --lite",
