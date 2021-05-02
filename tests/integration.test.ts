@@ -21,7 +21,10 @@ import {
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assertStringIncludes,
+} from "https://deno.land/std@0.93.0/testing/asserts.ts";
 import { JSZip } from "https://deno.land/x/jszip@0.9.0/mod.ts";
 
 import {
@@ -262,7 +265,7 @@ describe("main", () => {
     // Save the real console.error
     // to restore later
     const arg = "start";
-    const currentDir = "/tests";
+    const currentDir = "/Users/jp/Dev/jp-courses-install";
     const expectedMesage = START_WITH_NO_CONTENT_DIR(currentDir);
     const error = console.error;
 

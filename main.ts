@@ -1,7 +1,12 @@
-import { HELP_MESSAGE, SUCCESS_MESSAGE } from "./lib/constants.ts";
+import {
+  HELP_MESSAGE,
+  START_WITH_NO_CONTENT_DIR,
+  SUCCESS_MESSAGE,
+} from "./lib/constants.ts";
 import {
   downloadZipFromLink,
   handleArgs,
+  isValidStartDir,
   logErrorMessage,
   removeZip,
   setDryRunEnv,
@@ -39,7 +44,15 @@ export async function main(args: string[]): Promise<void> {
   }
 
   if (startArgPassed) {
-    console.log("hello world");
+    console.log("are we getting here");
+    const currentDir = Deno.cwd();
+    const hasContentDir = await isValidStartDir(currentDir);
+    if (!hasContentDir) {
+      const errorMessage = START_WITH_NO_CONTENT_DIR(currentDir);
+      logErrorMessage(errorMessage);
+      return;
+    }
+    console.log("TODO start server");
     return;
   }
 
