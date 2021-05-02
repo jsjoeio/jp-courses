@@ -3,7 +3,6 @@
 // i.e. a simple function like checking for next arg
 import { Args, ScriptFlagsAndArgs } from "../lib/types.ts";
 import {
-  fileExists,
   getDryRunEnv,
   handleArgs,
   hasNextArg,
@@ -15,6 +14,7 @@ import {
   setDryRunEnv,
   verifyPurchase,
 } from "../lib/utils.ts";
+import { fileExists } from "../lib/server.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DRY_RUN_ENV_KEY,

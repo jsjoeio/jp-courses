@@ -13,6 +13,7 @@ import {
   unZipCourse,
   verifyPurchase,
 } from "./lib/utils.ts";
+import { startCourseServer } from "./lib/server.ts";
 import { Args, ScriptFlagsAndArgs } from "./lib/types.ts";
 
 /**
@@ -52,7 +53,7 @@ export async function main(args: string[]): Promise<void> {
       logErrorMessage(errorMessage);
       return;
     }
-    console.log("TODO start server");
+    await startCourseServer();
     return;
   }
 
