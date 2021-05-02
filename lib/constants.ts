@@ -44,16 +44,18 @@ export const COULD_NOT_VERIFY_PAYMENT_ID = (value: PaymentId) =>
   `Could not verify purchase using payment id: ${value}
    Please contact joe at joe previte [dot com]`;
 export const SUCCESS_MESSAGE = `✔ Successfully downloaded course! 🎉`;
+const CLI_CALL = "./jp-courses";
+const REPO_URL = "https://github.com/jsjoeio/jp-courses-install";
 export const HELP_MESSAGE = `
 Downloads the $COURSE_NAME for paid users.
 
 Uses the following permissions (Deno flags):
   ${DENO_PERMISSION_FLAGS.join(", ")}
   Read more about permissions in the README
-  https://github.com/jsjoeio/jp-courses-install#permissions
+  ${REPO_URL}#permissions
 
 USAGE:
-  <$CLI_NAME> [OPTIONS] (-i|--paymentId) <paymentId>
+  ${CLI_CALL} [OPTIONS] (-i|--paymentId) <paymentId>
 
 OPTIONS:
   ${DRY_RUN_FLAGS.join(", ")}
@@ -65,7 +67,11 @@ OPTIONS:
 ARGS:
   ${PAYMENT_ID_FLAGS.join(", ")}
       Required. Verifies course purchase.
-      Example: $install_method --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i
+      Example: ${CLI_CALL} --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i
+  ${START_ARG.join(", ")}
+      Starts a course. Must be called from course directory.
+      i.e. checks for /content in directory when called.
+      Example: ${CLI_CALL} start
 
-More information can be found at https://github.com/jsjoeio/jp-courses-install
+More information can be found at ${REPO_URL}
 `;
