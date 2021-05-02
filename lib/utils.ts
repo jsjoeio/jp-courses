@@ -102,6 +102,12 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
         scriptFlagsAndArgs.argsPassed.paymentId = paymentId;
         break;
       }
+      case "start": {
+        //TODO eventually, we'll have to write a separate handleStartArgs
+        // which will let us add subflags to start
+        scriptFlagsAndArgs.argsPassed.start = true;
+        break;
+      }
 
       default: {
         // Since paymentIdValue is a string
