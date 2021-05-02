@@ -326,3 +326,17 @@ export async function isValidStartDir(
     return undefined;
   }
 }
+
+// Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L6-L17
+export async function fileExists(path: string) {
+  try {
+    const stats = await Deno.lstat(path);
+    return stats && stats.isFile;
+  } catch (e) {
+    if (e && e instanceof Deno.errors.NotFound) {
+      return false;
+    } else {
+      throw e;
+    }
+  }
+}

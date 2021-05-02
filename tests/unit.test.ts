@@ -3,6 +3,7 @@
 // i.e. a simple function like checking for next arg
 import { Args, ScriptFlagsAndArgs } from "../lib/types.ts";
 import {
+  fileExists,
   getDryRunEnv,
   handleArgs,
   hasNextArg,
@@ -342,5 +343,14 @@ describe("isValidStartDir", () => {
     const currentDir = tmpDirPath;
     const contentDirExists = await isValidStartDir(currentDir);
     assertEquals(contentDirExists, true);
+  });
+});
+
+describe("fileExists", () => {
+  test("should return false if the file doesn't exist", async () => {
+    assertEquals(await fileExists("joe.md"), false);
+  });
+  test("should return true if the file does exist", async () => {
+    assertEquals(await fileExists("README.md"), true);
   });
 });
