@@ -310,3 +310,19 @@ export function setDryRunEnv() {
 export function logFnNameAndDescription(fnName: string, description: string) {
   console.log(`Calling function "${fnName}" which "${description}"`);
 }
+
+/**
+ * Checks whether the current directory is a valid place
+ * to call "start" by looking for the expectedSubDir ("content")
+ */
+export async function isValidStartDir(
+  currentDir: string,
+): Promise<boolean | undefined> {
+  const expectedSubDir = "content";
+  try {
+    return await exists(`${currentDir}/${expectedSubDir}`);
+  } catch (error) {
+    console.error("uh oh", error);
+    return undefined;
+  }
+}

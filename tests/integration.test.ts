@@ -16,6 +16,7 @@ import {
   FILE_NOT_FOUND,
   HELP_MESSAGE,
   MISSING_DOWNLOAD_LINK,
+  START_WITH_NO_CONTENT_DIR,
   SUCCESS_MESSAGE,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
@@ -256,6 +257,25 @@ describe("main", () => {
     console.log = log;
     // Clean up
     Deno.remove(pathToUnzipped, { recursive: true });
+  });
+  test("should log an error if 'start' called in directory with no /content dir", async () => {
+    // Save the real console.error
+    // to restore later
+    const arg = "start";
+    const currentDir = "/tests";
+    const expectedMesage = START_WITH_NO_CONTENT_DIR(currentDir);
+    const error = console.error;
+
+    let errorMessage = null;
+
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
+    await main([arg]);
+
+    console.error = error;
+    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMesage}`);
   });
 });
 

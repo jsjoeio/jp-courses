@@ -7,6 +7,7 @@ import {
   handleArgs,
   hasNextArg,
   isValidPaymentIdValue,
+  isValidStartDir,
   logErrorMessage,
   logFnNameAndDescription,
   removeZip,
@@ -22,7 +23,7 @@ import {
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
-import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
+import { ensureDir, exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
 import { JSZip } from "https://deno.land/x/jszip@0.9.0/mod.ts";
 import {
   afterEach,
@@ -196,7 +197,7 @@ describe("handleArgs", () => {
       arg,
     ]);
 
-    assertEquals(scriptArgsAndFlags.argsPassed.start, true)
+    assertEquals(scriptArgsAndFlags.argsPassed.start, true);
   });
 });
 
@@ -308,5 +309,38 @@ describe("logFnNameAndDescription", () => {
     logFnNameAndDescription(fnName, description);
     const expected = `Calling function "${fnName}" which "${description}"`;
     assertEquals(message, expected);
+  });
+});
+
+describe("isValidStartDir", () => {
+  let tmpDirPath = "";
+  const prefix = "isValidStartDir";
+  let fakeIndexFile: Deno.File;
+
+  beforeEach(async () => {
+    // Create a temporary directory
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    // Add a fake content dir
+    await ensureDir(`${tmpDirPath}/content`);
+    fakeIndexFile = await Deno.create(`${tmpDirPath}/content/index.html`);
+  });
+
+  afterEach(async () => {
+    // Clean up
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+
+    Deno.close(tmpDirPathAsFile.rid);
+    Deno.close(fakeIndexFile.rid);
+    await Deno.remove(tmpDirPath, { recursive: true });
+  });
+  test("should return false if no /content in currentDir", async () => {
+    const currentDir = Deno.cwd();
+    const contentDirExists = await isValidStartDir(currentDir);
+    assertEquals(contentDirExists, false);
+  });
+  test("should return true if /content in currentDir", async () => {
+    const currentDir = tmpDirPath;
+    const contentDirExists = await isValidStartDir(currentDir);
+    assertEquals(contentDirExists, true);
   });
 });

@@ -21,6 +21,7 @@ export async function main(args: string[]): Promise<void> {
   const isHelpFlagEnabled = scriptFlagsAndArgs.flagsEnabled.help;
   const isDryRunFlagEnabled = scriptFlagsAndArgs.flagsEnabled.dryRun;
   const hasErrors = scriptFlagsAndArgs.errors.length > 0;
+  const startArgPassed = scriptFlagsAndArgs.argsPassed.start;
 
   if (isHelpFlagEnabled) {
     console.log(HELP_MESSAGE);
@@ -34,6 +35,11 @@ export async function main(args: string[]): Promise<void> {
   if (hasErrors) {
     const errors = scriptFlagsAndArgs.errors;
     errors.forEach((e) => logErrorMessage(e));
+    return;
+  }
+
+  if (startArgPassed) {
+    console.log("hello world");
     return;
   }
 

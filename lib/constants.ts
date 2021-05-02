@@ -35,6 +35,9 @@ export const DIRECTORY_NOT_FOUND = (dir: string) =>
 export const FILE_NOT_FOUND = (file: string) =>
   `File not found.
    Received: ${file}`;
+export const START_WITH_NO_CONTENT_DIR = (currentDir: string) =>
+  `Called "start" from directory without a course /content folder.
+   You called from this directory: ${currentDir}`;
 export const FAILED_TO_DOWNLOAD_ZIP = `Failed to download zip.
    Please try again.`;
 export const COULD_NOT_VERIFY_PAYMENT_ID = (value: PaymentId) =>
