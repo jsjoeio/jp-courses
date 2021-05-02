@@ -4,6 +4,7 @@ export const DRY_RUN_ENV_KEY = "DRY_RUN";
 export const HELP_FLAGS = ["-h", "--help"] as const;
 export const DRY_RUN_FLAGS = ["--dry-run", "--dryRun"] as const;
 export const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
+export const START_ARG = ["start"] as const;
 export const DENO_PERMISSION_FLAGS = [
   "--allow-net",
   "--allow-read",

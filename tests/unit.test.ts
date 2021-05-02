@@ -190,6 +190,14 @@ describe("handleArgs", () => {
 
     assertEquals(actualPaymentId, expected);
   });
+  test("should take a 'start' arg", () => {
+    const arg = "start";
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([
+      arg,
+    ]);
+
+    assertEquals(scriptArgsAndFlags.argsPassed.start, true)
+  });
 });
 
 describe("verifyPurchase", () => {

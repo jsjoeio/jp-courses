@@ -53,6 +53,7 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
     },
     argsPassed: {
       paymentId: "",
+      start: false,
     },
     errors: [],
   };
