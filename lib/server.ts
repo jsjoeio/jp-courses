@@ -99,3 +99,6 @@ export async function handleFileToServe(path: string, root: string) {
 
   return path;
 }
+
+// TODO add the rest of the oak server code in
+// everything that isn't part of the helper functions
