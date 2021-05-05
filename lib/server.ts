@@ -50,3 +50,12 @@ export function getParentDir(path: string) {
   // Source: https://stackoverflow.com/a/16863827/3015595
   return path.substring(0, path.lastIndexOf("/"));
 }
+
+export async function isDirectory(path: string) {
+  try {
+    const fileInfo = await Deno.stat(path);
+    return fileInfo.isDirectory;
+  } catch (error) {
+    console.error(error, "something went wrong checking if isDirectory");
+  }
+}

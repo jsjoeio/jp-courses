@@ -14,7 +14,7 @@ import {
   setDryRunEnv,
   verifyPurchase,
 } from "../lib/utils.ts";
-import { fileExists } from "../lib/server.ts";
+import { fileExists, isDirectory } from "../lib/server.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DRY_RUN_ENV_KEY,
@@ -362,5 +362,18 @@ describe("getParentDir", () => {
     const actual = getParentDir(path);
     const expected = "/out";
     assertEquals(actual, expected);
+  });
+});
+
+describe("isDirectory", () => {
+  test("should return true if it is a directory", async () => {
+    const path = `${Deno.cwd()}/tests`;
+    const actual = await isDirectory(path);
+    assertEquals(actual, true);
+  });
+  test("should return false if it is a file", async () => {
+    const path = `${Deno.cwd()}/README.md`;
+    const actual = await isDirectory(path);
+    assertEquals(actual, false);
   });
 });
