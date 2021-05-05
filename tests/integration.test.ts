@@ -21,10 +21,7 @@ import {
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
-import {
-  assertEquals,
-  assertStringIncludes,
-} from "https://deno.land/std@0.93.0/testing/asserts.ts";
+import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 import { JSZip } from "https://deno.land/x/jszip@0.9.0/mod.ts";
 
 import {
