@@ -59,3 +59,15 @@ export async function isDirectory(path: string) {
     console.error(error, "something went wrong checking if isDirectory");
   }
 }
+
+export async function hasHtmlFileForDir(fileName: string, parentDir: string) {
+  let hasHtmlFile = false;
+  // Source: https://deno.land/std@0.95.0/http/file_server.ts#L167
+  for await (const entry of Deno.readDir(parentDir)) {
+    if (entry.name === `${fileName}.html` && entry.isFile) {
+      hasHtmlFile = true;
+      break;
+    }
+  }
+  return hasHtmlFile;
+}

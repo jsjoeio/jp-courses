@@ -14,7 +14,7 @@ import {
   setDryRunEnv,
   verifyPurchase,
 } from "../lib/utils.ts";
-import { fileExists, isDirectory } from "../lib/server.ts";
+import { fileExists, hasHtmlFileForDir, isDirectory } from "../lib/server.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DRY_RUN_ENV_KEY,
@@ -374,6 +374,47 @@ describe("isDirectory", () => {
   test("should return false if it is a file", async () => {
     const path = `${Deno.cwd()}/README.md`;
     const actual = await isDirectory(path);
+    assertEquals(actual, false);
+  });
+});
+
+describe("hasHtmlFileForDir", () => {
+  let tmpDirPath = "";
+  const prefix = "hasHtmlFileForDir";
+  let fakeHtmlFile: Deno.File;
+  let fakeCourseHtmlFile: Deno.File;
+
+  beforeEach(async () => {
+    // Create a temporary directory
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    // Add a fake content dir
+    await ensureDir(`${tmpDirPath}/content`);
+
+    // Add a fake course dir
+    await ensureDir(`${tmpDirPath}/content/course`);
+    fakeHtmlFile = await Deno.create(`${tmpDirPath}/content/index.html`);
+    fakeCourseHtmlFile = await Deno.create(`${tmpDirPath}/content/course.html`);
+  });
+
+  afterEach(async () => {
+    // Clean up
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+
+    Deno.close(tmpDirPathAsFile.rid);
+    Deno.close(fakeHtmlFile.rid);
+    Deno.close(fakeCourseHtmlFile.rid);
+    await Deno.remove(tmpDirPath, { recursive: true });
+  });
+  test("should return true if there is an html file for the dir", async () => {
+    const fileName = "course";
+    const parentDir = `${tmpDirPath}/content`;
+    const actual = await hasHtmlFileForDir(fileName, parentDir);
+    assertEquals(actual, true);
+  });
+  test("should return false if there is not a matching html file for dir", async () => {
+    const fileName = "joe";
+    const parentDir = `${tmpDirPath}/content`;
+    const actual = await hasHtmlFileForDir(fileName, parentDir);
     assertEquals(actual, false);
   });
 });
