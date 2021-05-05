@@ -46,6 +46,12 @@ export async function startCourseServer(PORT = 3000) {
   }
 }
 
+//////////////////////////////////
+//////////////////////////////////
+// Helper Functions
+//////////////////////////////////
+//////////////////////////////////
+
 export function getParentDir(path: string) {
   // /Users/jp/Dev/testing/oak-server/examples/static/course
   // Source: https://stackoverflow.com/a/16863827/3015595
