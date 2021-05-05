@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.95.0/http/server.ts";
 import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
+import { extname } from "https://deno.land/std@0.95.0/path/mod.ts";
 // Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L6-L17
 export async function fileExists(path: string) {
   try {
@@ -70,4 +71,25 @@ export async function hasHtmlFileForDir(fileName: string, parentDir: string) {
     }
   }
   return hasHtmlFile;
+}
+
+export async function handleFileToServe(path: string, root: string) {
+  if (path === "/") {
+    return `index.html`;
+  }
+
+  const fileExt = extname(path);
+  const fullFilePath = `${root}${path}`;
+
+  if (fileExt === "" && (await isDirectory(fullFilePath))) {
+    // TODO this only looks one level deep
+    const fileName = path.substr(1);
+    const parentDir = getParentDir(fullFilePath);
+    const hasHtmlFile = await hasHtmlFileForDir(fileName, parentDir);
+    if (hasHtmlFile) {
+      return `${path}.html`;
+    }
+  }
+
+  return path;
 }

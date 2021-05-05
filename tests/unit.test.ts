@@ -14,7 +14,12 @@ import {
   setDryRunEnv,
   verifyPurchase,
 } from "../lib/utils.ts";
-import { fileExists, hasHtmlFileForDir, isDirectory } from "../lib/server.ts";
+import {
+  fileExists,
+  handleFileToServe,
+  hasHtmlFileForDir,
+  isDirectory,
+} from "../lib/server.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DRY_RUN_ENV_KEY,
@@ -416,5 +421,52 @@ describe("hasHtmlFileForDir", () => {
     const parentDir = `${tmpDirPath}/content`;
     const actual = await hasHtmlFileForDir(fileName, parentDir);
     assertEquals(actual, false);
+  });
+});
+
+describe("handleFileToServe", () => {
+  let tmpDirPath = "";
+  const prefix = "handleFileToServe";
+  let fakeHtmlFile: Deno.File;
+  let fakeCourseHtmlFile: Deno.File;
+
+  beforeEach(async () => {
+    // Create a temporary directory
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    // Add a fake content dir
+    await ensureDir(`${tmpDirPath}/content`);
+
+    // Add a fake course dir
+    await ensureDir(`${tmpDirPath}/content/course`);
+    fakeHtmlFile = await Deno.create(`${tmpDirPath}/content/index.html`);
+    fakeCourseHtmlFile = await Deno.create(`${tmpDirPath}/content/course.html`);
+  });
+
+  afterEach(async () => {
+    // Clean up
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+
+    Deno.close(tmpDirPathAsFile.rid);
+    Deno.close(fakeHtmlFile.rid);
+    Deno.close(fakeCourseHtmlFile.rid);
+    await Deno.remove(tmpDirPath, { recursive: true });
+  });
+  test("should return the index.html at the root", async () => {
+    const path = "/";
+    const root = `${tmpDirPath}/content`;
+    const fileToServe = await handleFileToServe(path, root);
+    assertEquals(fileToServe, "index.html");
+  });
+  test("should return course.html at /course", async () => {
+    const path = "/course";
+    const root = `${tmpDirPath}/content`;
+    const fileToServe = await handleFileToServe(path, root);
+    assertEquals(fileToServe, "/course.html");
+  });
+  test("should return path in every other scenario", async () => {
+    const path = "/bundle.js";
+    const root = `${tmpDirPath}/content`;
+    const fileToServe = await handleFileToServe(path, root);
+    assertEquals(fileToServe, "/bundle.js");
   });
 });
