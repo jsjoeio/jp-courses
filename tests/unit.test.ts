@@ -23,6 +23,7 @@ import {
   MISSING_PAYMENT_ID_VALUE,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
+import { getParentDir } from "../lib/server.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 import { ensureDir, exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
 import { JSZip } from "https://deno.land/x/jszip@0.9.0/mod.ts";
@@ -352,5 +353,14 @@ describe("fileExists", () => {
   });
   test("should return true if the file does exist", async () => {
     assertEquals(await fileExists("README.md"), true);
+  });
+});
+
+describe("getParentDir", () => {
+  test("should return the parent directory", () => {
+    const path = "/out/course";
+    const actual = getParentDir(path);
+    const expected = "/out";
+    assertEquals(actual, expected);
   });
 });

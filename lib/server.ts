@@ -44,3 +44,9 @@ export async function startCourseServer(PORT = 3000) {
     }
   }
 }
+
+export function getParentDir(path: string) {
+  // /Users/jp/Dev/testing/oak-server/examples/static/course
+  // Source: https://stackoverflow.com/a/16863827/3015595
+  return path.substring(0, path.lastIndexOf("/"));
+}
