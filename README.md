@@ -47,7 +47,10 @@ This project uses [`denon`](https://github.com/denosaurs/denon) to manage script
 
 ### `start`
 
-Runs the script with a valid payment ID.
+Starts the course on http://localhost:3000. Note: this will fail if there is not a directory with `/content` at the root.
+### `download`
+
+Runs the script with a valid payment ID to download the course.
 
 ### `help`
 
@@ -67,3 +70,7 @@ Runs only the `tests/unit.test.ts`
 ### `integration`
 
 Runs only the `tests/integration.test.ts`
+
+### `e2e`
+
+Runs only the `tests/e2e.test.ts`
