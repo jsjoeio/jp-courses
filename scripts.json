@@ -1,5 +1,5 @@
 {
-  "version": "0.0.4",
+  "version": "0.1.0",
   "watch": false,
   "allow": {
     "net": "joeprevite.com,raw.githubusercontent.com,127.0.0.1:3000",
