@@ -1,50 +1,113 @@
 import { serve } from "https://deno.land/std@0.95.0/http/server.ts";
-import { serveFile } from "https://deno.land/std@0.95.0/http/file_server.ts";
+import {
+  bold,
+  cyan,
+  green,
+  red,
+  yellow,
+} from "https://deno.land/std@0.95.0/fmt/colors.ts";
+
+import {
+  Application,
+  HttpError,
+  Status,
+} from "https://deno.land/x/oak@v7.1.0/mod.ts";
 import { extname } from "https://deno.land/std@0.95.0/path/mod.ts";
-// Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L6-L17
-export async function fileExists(path: string) {
+// Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L19-L35
+export async function startCourseServer(PORT = 8000) {
+  await app.listen({ hostname: "127.0.0.1", port: PORT });
+  // TODO listen for keypress
+  // https://deno.land/x/keypress@0.0.4
+}
+//////////////////////////////////
+//////////////////////////////////
+// Server Functions
+//////////////////////////////////
+//////////////////////////////////
+
+const app = new Application();
+
+// Error handler middleware
+app.use(async (context, next) => {
   try {
-    const stats = await Deno.lstat(path);
-    return stats && stats.isFile;
+    await next();
   } catch (e) {
-    if (e && e instanceof Deno.errors.NotFound) {
-      return false;
-    } else {
-      throw e;
+    if (e instanceof HttpError) {
+      // deno-lint-ignore no-explicit-any
+      context.response.status = e.status as any;
+      if (e.expose) {
+        context.response.body = `<!DOCTYPE html>
+            <html>
+              <body>
+                <h1>${e.status} - ${e.message}</h1>
+              </body>
+            </html>`;
+      } else {
+        context.response.body = `<!DOCTYPE html>
+            <html>
+              <body>
+                <h1>${e.status} - ${Status[e.status]}</h1>
+              </body>
+            </html>`;
+      }
+    } else if (e instanceof Error) {
+      context.response.status = 500;
+      context.response.body = `<!DOCTYPE html>
+            <html>
+              <body>
+                <h1>500 - Internal Server Error</h1>
+              </body>
+            </html>`;
+      console.log("Unhandled Error:", red(bold(e.message)));
+      console.log(e.stack);
     }
   }
-}
+});
 
-// Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L19-L35
-export async function startCourseServer(PORT = 3000) {
-  const server = serve({ port: PORT });
-  console.log(`🚀 Starting course on http://localhost:${PORT}`);
+// Logger
+app.use(async (context, next) => {
+  await next();
+  const rt = context.response.headers.get("X-Response-Time");
+  console.log(
+    `${green(context.request.method)} ${
+      cyan(
+        context.request.url.pathname,
+      )
+    } - ${bold(String(rt))}`,
+  );
+});
+
+// Response Time
+app.use(async (context, next) => {
+  const start = Date.now();
+  await next();
+  const ms = Date.now() - start;
+  context.response.headers.set("X-Response-Time", `${ms}ms`);
+});
+
+// Send static content
+app.use(async (context) => {
+  const root = `${Deno.cwd()}/examples/static`;
+  const requestPath = context.request.url.pathname;
+  const path = await handleFileToServe(requestPath, root);
+
+  await context.send({
+    root,
+    path,
+    index: "index.html",
+  });
+});
+
+app.addEventListener("listen", ({ hostname, port, serverType }) => {
+  console.log(`🚀 Starting course on ${green(`${hostname}:${port}`)}`);
+  console.log(bold("  using HTTP server: " + yellow(serverType)));
   console.log(``);
   // TODO listen for keypress
   // https://deno.land/x/keypress@0.0.4
-  console.log(`⌨️ To stop course, hit Control + C on your keyboard.`);
-
-  // Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L19-L35
-  for await (const req of server) {
-    const path = `${Deno.cwd()}/content${req.url}`;
-    console.log("path: ", path);
-    if (await fileExists(path)) {
-      console.log("does file exist?");
-      const content = await serveFile(req, path);
-      req.respond(content);
-      continue;
-    }
-
-    // TODO this isn't working well...
-    if (req.url === "/" || req.url === "") {
-      // If they go to root, serve the index.html
-      const content = await serveFile(req, `${path}index.html`);
-      req.respond(content);
-    } else {
-      req.respond({ status: 404 });
-    }
-  }
-}
+  console.log(
+    `⌨️ To stop course, hit ${yellow(`Control + C`)} on your keyboard.`,
+  );
+});
 
 //////////////////////////////////
 //////////////////////////////////

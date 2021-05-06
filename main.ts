@@ -45,7 +45,6 @@ export async function main(args: string[]): Promise<void> {
   }
 
   if (startArgPassed) {
-    console.log("are we getting here");
     const currentDir = Deno.cwd();
     const hasContentDir = await isValidStartDir(currentDir);
     if (!hasContentDir) {
