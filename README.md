@@ -74,3 +74,13 @@ Runs only the `tests/integration.test.ts`
 ### `e2e`
 
 Runs only the `tests/e2e.test.ts`
+
+## Release
+
+To generate a new release, follow these steps:
+
+1. Bump version in `scripts.json`
+2. Commit and push to remote
+3. Run `denon release`
+4. Type in release notes
+5. Press Enter
