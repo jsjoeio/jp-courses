@@ -15,6 +15,7 @@ import {
 } from "./lib/utils.ts";
 import { startCourseServer } from "./lib/server.ts";
 import { Args, ScriptFlagsAndArgs } from "./lib/types.ts";
+import { Application } from "https://deno.land/x/oak@v7.3.0/mod.ts";
 
 /**
  * The main script that's called
@@ -52,7 +53,10 @@ export async function main(args: string[]): Promise<void> {
       logErrorMessage(errorMessage);
       return;
     }
-    await startCourseServer();
+    const app = new Application();
+    // NOTE(@jsjoeio) if we listen on a port that isn't allowed with --allow-net
+    // then the course server will not work
+    await startCourseServer(app, 3000);
     return;
   }
 

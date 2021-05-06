@@ -27,11 +27,11 @@ cd jp-courses
 
 This CLI uses the following permissions:
 - `--allow-net`: allow network access
-  - the CLI sends a request to joeprevite.com to verify your purchase, then it downloads the course zip file from raw.githubusercontent.com.
+  - the CLI sends a request to joeprevite.com to verify your purchase, then it downloads the course zip file from raw.githubusercontent.com. We also serve the course content on localhost:3000
 - `--allow-write`
   - We unzip the course to your current directory (where you call the CLI).
 - `--allow-read`: allow file system read access
-  - Once we've downloaded the course as a zip to the system, we then need this to read the file and unzip it.
+  - Once we've downloaded the course as a zip to the system, we then need this to read the file and unzip it. We also need it to serve the course files on the course server which runs on localhost:3000
 - `--allow-env`
   - When the CLI is used in dry run mode, we add an environment variable called `DRY_RUN` and set it to "0".
 - `--unstable`
