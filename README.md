@@ -14,7 +14,6 @@ cd jp-courses
 ./jp-courses --help
 ```
 
-
 ### Download Manually
 
 1. Go to [Releases](https://github.com/jsjoeio/jp-courses-install/releases)
@@ -22,6 +21,23 @@ cd jp-courses
 3. Unzip
 4. `chmod +x jp-courses`
 5. Run `--help` or `--dryRun` to get started
+
+### Try the Demo Course
+
+After downloading the CLI, you can try the demo course by following these steps:
+
+```sh
+# inside jp-courses folder
+./jp-courses --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i
+
+# Downloads demo course into folder called `course`
+cd course
+
+# Start course
+../jp-courses start
+
+# Open course in browser on localhost:3000
+```
 
 ## Permissions
 
