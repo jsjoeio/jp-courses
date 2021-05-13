@@ -1,13 +1,15 @@
-# jp-courses-install
+# jp-courses
 
-Lil CLI for my courses written in Deno.
+CLI for downloading and taking my courses.
+
+Written in Deno.
 
 ## Quickstart
 
 To get started, run the install script which will download the project into a directory called `jp-courses`:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/jsjoeio/jp-courses-install/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/jsjoeio/jp-courses/main/scripts/install.sh | sh
 
 cd jp-courses
 
@@ -16,7 +18,7 @@ cd jp-courses
 
 ### Download Manually
 
-1. Go to [Releases](https://github.com/jsjoeio/jp-courses-install/releases)
+1. Go to [Releases](https://github.com/jsjoeio/jp-courses/releases)
 2. Download for your OS (aarch64-apple-darwin is for macOS with M1)
 3. Unzip
 4. `chmod +x jp-courses`
