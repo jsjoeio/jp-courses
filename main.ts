@@ -1,4 +1,5 @@
 import {
+  DEFAULT_PORT,
   HELP_MESSAGE,
   START_WITH_NO_CONTENT_DIR,
   SUCCESS_MESSAGE,
@@ -56,7 +57,7 @@ export async function main(args: string[]): Promise<void> {
     const app = new Application();
     // NOTE(@jsjoeio) if we listen on a port that isn't allowed with --allow-net
     // then the course server will not work
-    await startCourseServer(app, 3000);
+    await startCourseServer(app, DEFAULT_PORT);
     return;
   }
 

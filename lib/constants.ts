@@ -1,5 +1,6 @@
 import { PaymentId, PaymentIdArg } from "./types.ts";
 
+export const DEFAULT_PORT = 4507
 export const DRY_RUN_ENV_KEY = "DRY_RUN";
 export const HELP_FLAGS = ["-h", "--help"] as const;
 export const DRY_RUN_FLAGS = ["--dry-run", "--dryRun"] as const;
@@ -69,7 +70,7 @@ ARGS:
       Required. Verifies course purchase.
       Example: ${CLI_CALL} --paymentId cs_live_a1VHFUz7lYnXOL3PUus13VbktedDQDubwfew8E70EvnS1BTOfNTSUXqO0i
   ${START_ARG.join(", ")}
-      Starts a course and serves on http://localhost:3000
+      Starts a course and serves on http://localhost:${DEFAULT_PORT}
       Must be called from course directory.
       i.e. checks for /content in directory where called.
       Example: ${CLI_CALL} start

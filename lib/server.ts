@@ -12,6 +12,7 @@ import {
   Status,
 } from "https://deno.land/x/oak@v7.3.0/mod.ts";
 import { extname } from "https://deno.land/std@0.95.0/path/mod.ts";
+import { DEFAULT_PORT } from "./constants.ts";
 // Source: https://github.com/thecodeholic/deno-serve-static-files/blob/final-version/http-server/server.ts#L19-L35
 //////////////////////////////////
 //////////////////////////////////
@@ -91,14 +92,17 @@ export async function startCourseServer(app: Application, PORT = 3000) {
     });
   });
 
-  app.addEventListener("listen", ({ hostname, port, serverType }) => {
-    console.log(`🚀 Starting course on ${green(`${hostname}:${port}`)}`);
-    console.log(bold("   using HTTP server: " + yellow(serverType)));
-    console.log(``);
-    console.log(
-      `⌨️  To stop course, hit ${yellow(`Control + C`)} on your keyboard.`,
-    );
-  });
+  app.addEventListener(
+    "listen",
+    ({ hostname, port = DEFAULT_PORT, serverType }) => {
+      console.log(`🚀 Starting course on ${green(`${hostname}:${port}`)}`);
+      console.log(bold("   using HTTP server: " + yellow(serverType)));
+      console.log(``);
+      console.log(
+        `⌨️  To stop course, hit ${yellow(`Control + C`)} on your keyboard.`,
+      );
+    },
+  );
 
   await app.listen({
     hostname: "127.0.0.1",
