@@ -59,16 +59,16 @@ export async function startCourseServer(app: Application, PORT = DEFAULT_PORT) {
   });
 
   // Logger
-  app.use(async (context, next) => {
+  app.use(async (_, next) => {
     await next();
-    const rt = context.response.headers.get("X-Response-Time");
-    console.log(
-      `${green(context.request.method)} ${
-        cyan(
-          context.request.url.pathname,
-        )
-      } - ${bold(String(rt))}`,
-    );
+    // const rt = context.response.headers.get("X-Response-Time");
+    // console.log(
+    //   `${green(context.request.method)} ${
+    //     cyan(
+    //       context.request.url.pathname,
+    //     )
+    //   } - ${bold(String(rt))}`,
+    // );
   });
 
   // Response Time
