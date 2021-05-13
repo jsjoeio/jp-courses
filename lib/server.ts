@@ -20,7 +20,7 @@ import { DEFAULT_PORT } from "./constants.ts";
 //////////////////////////////////
 //////////////////////////////////
 
-export async function startCourseServer(app: Application, PORT = 3000) {
+export async function startCourseServer(app: Application, PORT = DEFAULT_PORT) {
   // Error handler middleware
   app.use(async (context, next) => {
     try {
@@ -94,7 +94,7 @@ export async function startCourseServer(app: Application, PORT = 3000) {
 
   app.addEventListener(
     "listen",
-    ({ hostname, port = DEFAULT_PORT, serverType }) => {
+    ({ hostname, port, serverType }) => {
       console.log(`🚀 Starting course on ${green(`${hostname}:${port}`)}`);
       console.log(bold("   using HTTP server: " + yellow(serverType)));
       console.log(``);
