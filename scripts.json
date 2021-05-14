@@ -6,7 +6,7 @@
     "read": true,
     "write": "/var,/",
     "run": true,
-    "env": "DRY_RUN"
+    "env": "DRY_RUN,PORT"
   },
   "$schema": "https://deno.land/x/denon@2.4.7/schema.json",
   "unstable": true,

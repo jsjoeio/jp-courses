@@ -4,6 +4,7 @@
 import { Args, ScriptFlagsAndArgs } from "../lib/types.ts";
 import {
   getDryRunEnv,
+  getPortEnv,
   handleArgs,
   hasNextArg,
   isValidPaymentIdValue,
@@ -25,6 +26,7 @@ import {
   ERROR_MESSAGE_TEMPLATE,
   INVALID_PAYMENT_ID_VALUE,
   MISSING_PAYMENT_ID_VALUE,
+  PORT_ENV_KEY,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { getParentDir } from "../lib/server.ts";
@@ -292,6 +294,20 @@ describe("DRY_RUN_ENV_KEY", () => {
     assertEquals(key, "0");
     // Clean up
     Deno.env.delete(DRY_RUN_ENV_KEY);
+  });
+});
+
+describe("PORT_ENV_KEY", () => {
+  test("should be undefined if not set", () => {
+    const port = getPortEnv();
+    assertEquals(port, undefined);
+  });
+  test("should be set if set by user", () => {
+    Deno.env.set(PORT_ENV_KEY, "4507");
+    const port = getPortEnv();
+    assertEquals(port, "4507");
+    // Clean up
+    Deno.env.delete(PORT_ENV_KEY);
   });
 });
 

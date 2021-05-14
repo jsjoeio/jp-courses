@@ -7,6 +7,7 @@ import {
   INVALID_PAYMENT_ID_VALUE,
   MISSING_DOWNLOAD_LINK,
   MISSING_PAYMENT_ID_VALUE,
+  PORT_ENV_KEY,
   UNSUPPORTED_ARG,
 } from "./constants.ts";
 import {
@@ -300,6 +301,14 @@ export function getDryRunEnv() {
 }
 
 /**
+ * Returns the environment variable
+ * for PORT_ENV_KEY
+ */
+export function getPortEnv() {
+  return Deno.env.get(PORT_ENV_KEY);
+}
+
+/**
  * Sets the environment variable
  * DRY_RUN_ENV_KEY to "0"
  */
@@ -326,4 +335,3 @@ export async function isValidStartDir(
     return undefined;
   }
 }
-

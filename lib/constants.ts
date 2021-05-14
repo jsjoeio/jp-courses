@@ -2,6 +2,7 @@ import { PaymentId, PaymentIdArg } from "./types.ts";
 
 export const DEFAULT_PORT = 4507
 export const DRY_RUN_ENV_KEY = "DRY_RUN";
+export const PORT_ENV_KEY = "PORT";
 export const HELP_FLAGS = ["-h", "--help"] as const;
 export const DRY_RUN_FLAGS = ["--dry-run", "--dryRun"] as const;
 export const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
