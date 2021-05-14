@@ -93,7 +93,7 @@ export async function startCourseServer(app: Application, PORT = DEFAULT_PORT) {
 
   await app.listen({
     hostname: "127.0.0.1",
-    port: PORT,
+    port: parseInt(PORT),
   });
 }
 

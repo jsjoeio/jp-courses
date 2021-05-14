@@ -22,6 +22,7 @@ import {
 } from "../lib/server.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
+  DEFAULT_PORT,
   DRY_RUN_ENV_KEY,
   ERROR_MESSAGE_TEMPLATE,
   INVALID_PAYMENT_ID_VALUE,
@@ -298,14 +299,15 @@ describe("DRY_RUN_ENV_KEY", () => {
 });
 
 describe("PORT_ENV_KEY", () => {
-  test("should be undefined if not set", () => {
+  test("should be DEFAULT PORT if not set", () => {
     const port = getPortEnv();
-    assertEquals(port, undefined);
+    assertEquals(port, DEFAULT_PORT);
   });
   test("should be set if set by user", () => {
-    Deno.env.set(PORT_ENV_KEY, "4507");
+    const userSetPort = "8080";
+    Deno.env.set(PORT_ENV_KEY, userSetPort);
     const port = getPortEnv();
-    assertEquals(port, "4507");
+    assertEquals(port, userSetPort);
     // Clean up
     Deno.env.delete(PORT_ENV_KEY);
   });

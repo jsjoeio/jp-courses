@@ -1,5 +1,6 @@
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
+  DEFAULT_PORT,
   DIRECTORY_NOT_FOUND,
   DRY_RUN_ENV_KEY,
   ERROR_MESSAGE_TEMPLATE,
@@ -302,10 +303,15 @@ export function getDryRunEnv() {
 
 /**
  * Returns the environment variable
- * for PORT_ENV_KEY
+ * for PORT_ENV_KEY. If not existant,
+ * returns DEFAULT_PORT
  */
 export function getPortEnv() {
-  return Deno.env.get(PORT_ENV_KEY);
+  const PORT = Deno.env.get(PORT_ENV_KEY);
+  if (!PORT) {
+    return DEFAULT_PORT;
+  }
+  return PORT;
 }
 
 /**

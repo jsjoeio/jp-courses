@@ -1,6 +1,6 @@
 import { PaymentId, PaymentIdArg } from "./types.ts";
 
-export const DEFAULT_PORT = 4507
+export const DEFAULT_PORT = "4507";
 export const DRY_RUN_ENV_KEY = "DRY_RUN";
 export const PORT_ENV_KEY = "PORT";
 export const HELP_FLAGS = ["-h", "--help"] as const;
@@ -75,6 +75,9 @@ ARGS:
       Must be called from course directory.
       i.e. checks for /content in directory where called.
       Example: ${CLI_CALL} start
+
+      You can also change the port with the ${PORT_ENV_KEY} environment variable.
+      Example: ${PORT_ENV_KEY}=8000 ${CLI_CALL} start
 
 
 More information can be found at ${REPO_URL}

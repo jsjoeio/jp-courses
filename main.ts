@@ -1,11 +1,11 @@
 import {
-  DEFAULT_PORT,
   HELP_MESSAGE,
   START_WITH_NO_CONTENT_DIR,
   SUCCESS_MESSAGE,
 } from "./lib/constants.ts";
 import {
   downloadZipFromLink,
+  getPortEnv,
   handleArgs,
   isValidStartDir,
   logErrorMessage,
@@ -57,7 +57,8 @@ export async function main(args: string[]): Promise<void> {
     const app = new Application();
     // NOTE(@jsjoeio) if we listen on a port that isn't allowed with --allow-net
     // then the course server will not work
-    await startCourseServer(app, DEFAULT_PORT);
+    const PORT = getPortEnv();
+    await startCourseServer(app, PORT);
     return;
   }
 
