@@ -15,7 +15,6 @@ import {
   verifyPurchase,
 } from "../lib/utils.ts";
 import {
-  fileExists,
   handleFileToServe,
   hasHtmlFileForDir,
   isDirectory,
@@ -349,15 +348,6 @@ describe("isValidStartDir", () => {
     const currentDir = tmpDirPath;
     const contentDirExists = await isValidStartDir(currentDir);
     assertEquals(contentDirExists, true);
-  });
-});
-
-describe("fileExists", () => {
-  test("should return false if the file doesn't exist", async () => {
-    assertEquals(await fileExists("joe.md"), false);
-  });
-  test("should return true if the file does exist", async () => {
-    assertEquals(await fileExists("README.md"), true);
   });
 });
 
