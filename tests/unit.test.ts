@@ -7,8 +7,8 @@ import {
   getPortEnv,
   handleArgs,
   hasNextArg,
+  isValidDir,
   isValidPaymentIdValue,
-  isValidStartDir,
   logErrorMessage,
   logFnNameAndDescription,
   removeZip,
@@ -208,6 +208,14 @@ describe("handleArgs", () => {
 
     assertEquals(scriptArgsAndFlags.argsPassed.start, true);
   });
+  test("should take a 'test' arg", () => {
+    const arg = "test";
+    const scriptArgsAndFlags: ScriptFlagsAndArgs = handleArgs([
+      arg,
+    ]);
+
+    assertEquals(scriptArgsAndFlags.argsPassed.test, true);
+  });
 });
 
 describe("verifyPurchase", () => {
@@ -336,9 +344,9 @@ describe("logFnNameAndDescription", () => {
   });
 });
 
-describe("isValidStartDir", () => {
+describe("isValidDir", () => {
   let tmpDirPath = "";
-  const prefix = "isValidStartDir";
+  const prefix = "isValidDir";
   let fakeIndexFile: Deno.File;
 
   beforeEach(async () => {
@@ -359,12 +367,12 @@ describe("isValidStartDir", () => {
   });
   test("should return false if no /content in currentDir", async () => {
     const currentDir = Deno.cwd();
-    const contentDirExists = await isValidStartDir(currentDir);
+    const contentDirExists = await isValidDir(currentDir, "content");
     assertEquals(contentDirExists, false);
   });
   test("should return true if /content in currentDir", async () => {
     const currentDir = tmpDirPath;
-    const contentDirExists = await isValidStartDir(currentDir);
+    const contentDirExists = await isValidDir(currentDir, "content");
     assertEquals(contentDirExists, true);
   });
 });

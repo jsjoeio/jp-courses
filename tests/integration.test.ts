@@ -18,6 +18,7 @@ import {
   MISSING_DOWNLOAD_LINK,
   START_WITH_NO_CONTENT_DIR,
   SUCCESS_MESSAGE,
+  TEST_WITH_NO_PRACTICE_DIR,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
@@ -264,6 +265,25 @@ describe("main", () => {
     const arg = "start";
     const currentDir = "/Users/jp/Dev/jp-courses-install";
     const expectedMesage = START_WITH_NO_CONTENT_DIR(currentDir);
+    const error = console.error;
+
+    let errorMessage = null;
+
+    console.error = (x) => {
+      errorMessage = x;
+    };
+
+    await main([arg]);
+
+    console.error = error;
+    assertEquals(errorMessage, `${ERROR_MESSAGE_TEMPLATE} ${expectedMesage}`);
+  });
+  test("should log an error if 'test' called in directory with no /practice dir", async () => {
+    // Save the real console.error
+    // to restore later
+    const arg = "test";
+    const currentDir = "/Users/jp/Dev/jp-courses";
+    const expectedMesage = TEST_WITH_NO_PRACTICE_DIR(currentDir);
     const error = console.error;
 
     let errorMessage = null;

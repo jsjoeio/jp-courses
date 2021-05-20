@@ -7,6 +7,7 @@ export const HELP_FLAGS = ["-h", "--help"] as const;
 export const DRY_RUN_FLAGS = ["--dry-run", "--dryRun"] as const;
 export const PAYMENT_ID_FLAGS = ["-i", "--paymentId", "--payment-id"] as const;
 export const START_ARG = ["start"] as const;
+export const TEST_ARG = ["test"] as const;
 export const DENO_PERMISSION_FLAGS = [
   "--allow-net",
   "--allow-read",
@@ -39,6 +40,9 @@ export const FILE_NOT_FOUND = (file: string) =>
    Received: ${file}`;
 export const START_WITH_NO_CONTENT_DIR = (currentDir: string) =>
   `Called "start" from directory without a course /content folder.
+   You called from this directory: ${currentDir}`;
+export const TEST_WITH_NO_PRACTICE_DIR = (currentDir: string) =>
+  `Called "test" from directory without a course /practice folder.
    You called from this directory: ${currentDir}`;
 export const FAILED_TO_DOWNLOAD_ZIP = `Failed to download zip.
    Please try again.`;
@@ -78,6 +82,10 @@ ARGS:
 
       You can also change the port with the ${PORT_ENV_KEY} environment variable.
       Example: ${PORT_ENV_KEY}=8000 ${CLI_CALL} start
+  ${TEST_ARG.join(", ")}
+      Verfies the exercises and quizzes for the course.
+      Must be called from the course directory.
+      i.e. checks for /practice in directory where called.
 
 
 More information can be found at ${REPO_URL}

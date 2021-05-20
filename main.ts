@@ -2,12 +2,13 @@ import {
   HELP_MESSAGE,
   START_WITH_NO_CONTENT_DIR,
   SUCCESS_MESSAGE,
+  TEST_WITH_NO_PRACTICE_DIR,
 } from "./lib/constants.ts";
 import {
   downloadZipFromLink,
   getPortEnv,
   handleArgs,
-  isValidStartDir,
+  isValidDir,
   logErrorMessage,
   removeZip,
   setDryRunEnv,
@@ -30,6 +31,7 @@ export async function main(args: string[]): Promise<void> {
   const isDryRunFlagEnabled = scriptFlagsAndArgs.flagsEnabled.dryRun;
   const hasErrors = scriptFlagsAndArgs.errors.length > 0;
   const startArgPassed = scriptFlagsAndArgs.argsPassed.start;
+  const testArgPassed = scriptFlagsAndArgs.argsPassed.test;
 
   if (isHelpFlagEnabled) {
     console.log(HELP_MESSAGE);
@@ -48,7 +50,7 @@ export async function main(args: string[]): Promise<void> {
 
   if (startArgPassed) {
     const currentDir = Deno.cwd();
-    const hasContentDir = await isValidStartDir(currentDir);
+    const hasContentDir = await isValidDir(currentDir, "content");
     if (!hasContentDir) {
       const errorMessage = START_WITH_NO_CONTENT_DIR(currentDir);
       logErrorMessage(errorMessage);
@@ -60,6 +62,16 @@ export async function main(args: string[]): Promise<void> {
     const PORT = getPortEnv();
     await startCourseServer(app, PORT);
     return;
+  }
+
+  if (testArgPassed) {
+    const currentDir = Deno.cwd();
+    const hasPracticeDir = await isValidDir(currentDir, "practice");
+    if (!hasPracticeDir) {
+      const errorMessage = TEST_WITH_NO_PRACTICE_DIR(currentDir);
+      logErrorMessage(errorMessage);
+      return;
+    }
   }
 
   // If paymentId is an empty string here

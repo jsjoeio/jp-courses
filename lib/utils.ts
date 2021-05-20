@@ -56,6 +56,7 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
     argsPassed: {
       paymentId: "",
       start: false,
+      test: false,
     },
     errors: [],
   };
@@ -105,9 +106,15 @@ export function handleArgs(args: Args[]): ScriptFlagsAndArgs {
         break;
       }
       case "start": {
-        //TODO eventually, we'll have to write a separate handleStartArgs
+        // TODO eventually, we'll have to write a separate handleStartArgs
         // which will let us add subflags to start
         scriptFlagsAndArgs.argsPassed.start = true;
+        break;
+      }
+      case "test": {
+        // TODO eventually, we'll have to write a separate handleTestArgs
+        // which will let us add subflags to start
+        scriptFlagsAndArgs.argsPassed.test = true;
         break;
       }
 
@@ -327,13 +334,13 @@ export function logFnNameAndDescription(fnName: string, description: string) {
 }
 
 /**
- * Checks whether the current directory is a valid place
- * to call "start" by looking for the expectedSubDir ("content")
+ * Checks whether the current directory is a valid
+ * by looking for the expectedSubDir
  */
-export async function isValidStartDir(
+export async function isValidDir(
   currentDir: string,
+  expectedSubDir: string
 ): Promise<boolean | undefined> {
-  const expectedSubDir = "content";
   try {
     return await exists(`${currentDir}/${expectedSubDir}`);
   } catch (error) {
