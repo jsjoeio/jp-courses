@@ -1,12 +1,13 @@
 // Unit Tests
 // Anything that doesn't rely on something else
 // i.e. a simple function like checking for next arg
-import { Args, ScriptFlagsAndArgs } from "../lib/types.ts";
+import { Args, CourseConfig, ScriptFlagsAndArgs } from "../lib/types.ts";
 import {
   getDryRunEnv,
   getPortEnv,
   handleArgs,
   hasNextArg,
+  isValidCourseConfig,
   isValidDir,
   isValidPaymentIdValue,
   logErrorMessage,
@@ -484,5 +485,96 @@ describe("handleFileToServe", () => {
     const root = `${tmpDirPath}/content`;
     const fileToServe = await handleFileToServe(path, root);
     assertEquals(fileToServe, "/bundle.js");
+  });
+});
+
+describe("isValidCourseConfig", () => {
+  test("should return true if valid", () => {
+    const config: CourseConfig = {
+      name: "Basics of TypeScript",
+      author: {
+        name: "Joe Previte",
+        twitter: "@jsjoeio",
+        github: "@jsjoeio",
+        website: "https://joeprevite.com",
+      },
+      modules: [
+        {
+          title: "How to Read TypeScript",
+          number: 1,
+          lessons: [
+            {
+              title: "Annotations",
+              number: 1,
+              sublessons: [
+                {
+                  title: "Parameter Type Annotations",
+                  number: 1,
+                  exercises: [
+                    {
+                      title: "Write Your Own",
+                      number: 1,
+                      skippable: false,
+                      answerType: "stringMatch",
+                      answers: ["a: number, b: number"],
+                    },
+                    {
+                      title: "In The Wild",
+                      number: 2,
+                      skippable: true,
+                      answerType: "subStringMatch",
+                      answers: ["https://github.com", "https://gitlab.com"],
+                    },
+                    {
+                      title: "Meta",
+                      number: 3,
+                      skippable: true,
+                      answerType: "subStringMatch",
+                      answers: ["https://github.com", "https://gitlab.com"],
+                    },
+                  ],
+                  quiz: [
+                    {
+                      title: "Do parameters always need to be annotated?",
+                      number: 1,
+                      skippable: false,
+                      answers: ["yes"],
+                    },
+                    {
+                      title:
+                        "Type annotations are defined using what single character?",
+                      number: 2,
+                      skippable: false,
+                      answers: [":", "colon"],
+                    },
+                    {
+                      title:
+                        "What is the type for the parameter used in the `helloWorld` example from the lesson?",
+                      number: 3,
+                      skippable: false,
+                      answers: ["string"],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    assertEquals(isValidCourseConfig(config), true);
+  });
+  test("should return false if invalid", () => {
+    const config: CourseConfig = {
+      name: "Basics of TypeScript",
+      author: {
+        name: "Joe Previte",
+        twitter: "@jsjoeio",
+        github: "@jsjoeio",
+        website: "https://joeprevite.com",
+      },
+      modules: [],
+    };
+    assertEquals(isValidCourseConfig(config), false);
   });
 });

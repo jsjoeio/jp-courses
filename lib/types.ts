@@ -62,3 +62,54 @@ interface VerifyPurchaseErrorResponse {
 export type VerifyPurchaseResponse =
   | VerifyPurchaseSuccessResponse
   | VerifyPurchaseErrorResponse;
+
+type Author = {
+  name: string;
+  /** The Twitter handle i.e. @jsjoeio (including "@") */
+  twitter?: string;
+  /** The GitHub handle i.e. jsjoeio */
+  github?: string;
+  website?: string;
+};
+
+type CourseExercise = {
+  title: string;
+  number: number;
+  skippable: boolean;
+  answerType: "stringMatch" | "subStringMatch";
+  answers: string[];
+};
+
+type CourseQuizQuestion = {
+  title: string;
+  number: number;
+  skippable: boolean;
+  answers: string[];
+};
+
+type CourseSublesson = {
+  title: string;
+  number: number;
+  exercises: CourseExercise[];
+  quiz: CourseQuizQuestion[];
+};
+
+type CourseLesson = {
+  title: string;
+  number: number;
+  sublessons: CourseSublesson[];
+};
+
+type CourseModule = {
+  /** Title for the module */
+  title: string;
+  number: number;
+  lessons: CourseLesson[];
+};
+
+export interface CourseConfig {
+  /** The name of the course */
+  name: string;
+  author: Author;
+  modules: CourseModule[];
+}

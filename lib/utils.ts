@@ -13,6 +13,7 @@ import {
 } from "./constants.ts";
 import {
   Args,
+  CourseConfig,
   PaymentId,
   ScriptFlagsAndArgs,
   VerifyPurchase,
@@ -339,7 +340,7 @@ export function logFnNameAndDescription(fnName: string, description: string) {
  */
 export async function isValidDir(
   currentDir: string,
-  expectedSubDir: string
+  expectedSubDir: string,
 ): Promise<boolean | undefined> {
   try {
     return await exists(`${currentDir}/${expectedSubDir}`);
@@ -347,4 +348,18 @@ export async function isValidDir(
     console.error("uh oh", error);
     return undefined;
   }
+}
+
+/**
+ * Validates a course config
+ */
+export function isValidCourseConfig(config: CourseConfig) {
+  const MINIMUM_MODULES = 1;
+  const numOfModules = config.modules.length;
+
+  if (numOfModules < MINIMUM_MODULES) {
+    return false;
+  }
+
+  return true;
 }
