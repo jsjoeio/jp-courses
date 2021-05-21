@@ -452,3 +452,42 @@ describe("unZipCourse", () => {
     assertEquals(unZippedExists, true);
   });
 });
+
+/*
+
+Thoughts
+
+This will be the function that runs when we call `jp-courses test`
+
+It will:
+1. determine which module, lesson and sub-lesson is in progress
+2. it will then test all the exercises and all the quizzes
+3. it will mark them complete if complete
+4. if all exericses, quizzes are complete, it will mark sub-lesson complete
+5. it will also walk up to the lesson and see if that should be marked complete as well
+6. same with the module
+
+*/
+describe("verifyPracticeContent", () => {
+  let tmpDirPath = "";
+  const prefix = `verifyPracticeContent`;
+  const log = console.log;
+  const messages = [];
+
+  beforeEach(async () => {
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+
+    console.log = (x) => {
+      messages.push(x);
+    };
+  });
+
+  afterEach(async () => {
+    // Clean up
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+    Deno.close(tmpDirPathAsFile.rid);
+    await Deno.remove(tmpDirPath, { recursive: true });
+
+    console.log = log;
+  });
+});
