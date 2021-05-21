@@ -76,6 +76,7 @@ type CourseExercise = {
   title: string;
   number: number;
   skippable: boolean;
+  completed: boolean;
   answerType: "stringMatch" | "subStringMatch";
   answers: string[];
 };
@@ -84,12 +85,14 @@ type CourseQuizQuestion = {
   title: string;
   number: number;
   skippable: boolean;
+  completed: false;
   answers: string[];
 };
 
 type CourseSublesson = {
   title: string;
   number: number;
+  completed: boolean;
   exercises: CourseExercise[];
   quiz: CourseQuizQuestion[];
 };
@@ -104,6 +107,7 @@ type CourseModule = {
   /** Title for the module */
   title: string;
   number: number;
+  completed: boolean;
   lessons: CourseLesson[];
 };
 

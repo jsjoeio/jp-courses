@@ -502,6 +502,7 @@ describe("isValidCourseConfig", () => {
         {
           title: "How to Read TypeScript",
           number: 1,
+          completed: false,
           lessons: [
             {
               title: "Annotations",
@@ -510,11 +511,13 @@ describe("isValidCourseConfig", () => {
                 {
                   title: "Parameter Type Annotations",
                   number: 1,
+                  completed: false,
                   exercises: [
                     {
                       title: "Write Your Own",
                       number: 1,
                       skippable: false,
+                      completed: false,
                       answerType: "stringMatch",
                       answers: ["a: number, b: number"],
                     },
@@ -522,6 +525,7 @@ describe("isValidCourseConfig", () => {
                       title: "In The Wild",
                       number: 2,
                       skippable: true,
+                      completed: false,
                       answerType: "subStringMatch",
                       answers: ["https://github.com", "https://gitlab.com"],
                     },
@@ -529,6 +533,7 @@ describe("isValidCourseConfig", () => {
                       title: "Meta",
                       number: 3,
                       skippable: true,
+                      completed: false,
                       answerType: "subStringMatch",
                       answers: ["https://github.com", "https://gitlab.com"],
                     },
@@ -538,6 +543,7 @@ describe("isValidCourseConfig", () => {
                       title: "Do parameters always need to be annotated?",
                       number: 1,
                       skippable: false,
+                      completed: false,
                       answers: ["yes"],
                     },
                     {
@@ -545,6 +551,7 @@ describe("isValidCourseConfig", () => {
                         "Type annotations are defined using what single character?",
                       number: 2,
                       skippable: false,
+                      completed: false,
                       answers: [":", "colon"],
                     },
                     {
@@ -552,6 +559,7 @@ describe("isValidCourseConfig", () => {
                         "What is the type for the parameter used in the `helloWorld` example from the lesson?",
                       number: 3,
                       skippable: false,
+                      completed: false,
                       answers: ["string"],
                     },
                   ],
