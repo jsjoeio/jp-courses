@@ -14,6 +14,7 @@ import {
 import {
   Args,
   CourseConfig,
+  CourseProgress,
   PaymentId,
   ScriptFlagsAndArgs,
   VerifyPurchase,
@@ -362,4 +363,77 @@ export function isValidCourseConfig(config: CourseConfig) {
   }
 
   return true;
+}
+
+/**
+ * Returns the course config
+ */
+export async function getCourseConfig(dir: string): Promise<CourseConfig> {
+  // Source: https://www.seanmcp.com/articles/read-a-json-file-in-deno/
+  const configAsString = await Deno.readTextFile(`${dir}/config.json`);
+  return JSON.parse(configAsString);
+}
+
+/**
+ * Gets current progress for course
+ */
+export async function getCourseProgress(dir: string) {
+  const courseConfig = await getCourseConfig(dir);
+  const progress: CourseProgress = {
+    course: "",
+    module: "",
+    lesson: "",
+    sublesson: undefined,
+  };
+
+  progress.course = courseConfig.name;
+
+  // We use .every because it breaks when you return false
+  // Source: https://masteringjs.io/tutorials/fundamentals/foreach-break
+  courseConfig.modules.every((module) => {
+    const isModuleComplete = module.completed;
+
+    if (!isModuleComplete) {
+      progress.module = module.title;
+      return false;
+    }
+  });
+
+  const currentModule =
+    courseConfig.modules.filter((module) =>
+      module.title === progress.module
+    )[0];
+
+  currentModule.lessons.every((lesson) => {
+    const isLessonComplete = lesson.completed;
+
+    if (!isLessonComplete) {
+      progress.lesson = lesson.title;
+      return false;
+    }
+  });
+
+  const currentLesson =
+    currentModule.lessons.filter((lesson) =>
+      lesson.title === progress.lesson
+    )[0];
+
+  currentLesson.sublessons.every((sublesson) => {
+    const isSublessonComplete = sublesson.completed;
+
+    if (!isSublessonComplete) {
+      progress.sublesson = sublesson.title;
+      return false;
+    }
+  });
+
+  return progress;
+}
+
+/**
+ * Verifies practice content
+ */
+export function verifyPracticeContent(dir: string): void {
+  console.log(dir);
+  return undefined;
 }

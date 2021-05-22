@@ -100,6 +100,7 @@ type CourseSublesson = {
 type CourseLesson = {
   title: string;
   number: number;
+  completed: boolean;
   sublessons: CourseSublesson[];
 };
 
@@ -117,3 +118,12 @@ export interface CourseConfig {
   author: Author;
   modules: CourseModule[];
 }
+
+export type CourseProgress = {
+  course: string;
+  module: string;
+  lesson: string;
+  /** Sublessons aren't required,
+   * hence why it may be undefined */
+  sublesson: string | undefined;
+};
