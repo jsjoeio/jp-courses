@@ -6,8 +6,9 @@ import {
   downloadZipFromLink,
   getDryRunEnv,
   unZipCourse,
+  verifyPracticeContent,
 } from "../lib/utils.ts";
-import { VerifyPurchase } from "../lib/types.ts";
+import { CourseConfig, VerifyPurchase } from "../lib/types.ts";
 import {
   COULD_NOT_VERIFY_PAYMENT_ID,
   DIRECTORY_NOT_FOUND,
@@ -471,11 +472,95 @@ It will:
 describe("verifyPracticeContent", () => {
   let tmpDirPath = "";
   const prefix = `verifyPracticeContent`;
+  let jsonFilePath = "";
+  const course: CourseConfig = {
+    name: "Basics of TypeScript",
+    author: {
+      name: "Joe Previte",
+      twitter: "@jsjoeio",
+      github: "@jsjoeio",
+      website: "https://joeprevite.com",
+    },
+    modules: [
+      {
+        title: "How to Read TypeScript",
+        number: 1,
+        completed: false,
+        lessons: [
+          {
+            title: "Annotations",
+            number: 1,
+            completed: false,
+            sublessons: [
+              {
+                title: "Parameter Type Annotations",
+                number: 1,
+                completed: false,
+                exercises: [
+                  {
+                    title: "Write Your Own",
+                    number: 1,
+                    skippable: false,
+                    completed: false,
+                    answerType: "stringMatch",
+                    answers: ["a: number, b: number"],
+                  },
+                  {
+                    title: "In The Wild",
+                    number: 2,
+                    skippable: true,
+                    completed: false,
+                    answerType: "subStringMatch",
+                    answers: ["https://github.com", "https://gitlab.com"],
+                  },
+                  {
+                    title: "Meta",
+                    number: 3,
+                    skippable: true,
+                    completed: false,
+                    answerType: "subStringMatch",
+                    answers: ["https://github.com", "https://gitlab.com"],
+                  },
+                ],
+                quiz: [
+                  {
+                    title: "Do parameters always need to be annotated?",
+                    number: 1,
+                    skippable: false,
+                    completed: false,
+                    answers: ["yes"],
+                  },
+                  {
+                    title:
+                      "Type annotations are defined using what single character?",
+                    number: 2,
+                    skippable: false,
+                    completed: false,
+                    answers: [":", "colon"],
+                  },
+                  {
+                    title:
+                      "What is the type for the parameter used in the `helloWorld` example from the lesson?",
+                    number: 3,
+                    skippable: false,
+                    completed: false,
+                    answers: ["string"],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
   const log = console.log;
-  const messages = [];
+  const messages: string[] = [];
 
   beforeEach(async () => {
     tmpDirPath = await Deno.makeTempDir({ prefix });
+    jsonFilePath = `${tmpDirPath}/config.json`;
+    await Deno.writeTextFile(jsonFilePath, JSON.stringify(course));
 
     console.log = (x) => {
       messages.push(x);
@@ -485,9 +570,29 @@ describe("verifyPracticeContent", () => {
   afterEach(async () => {
     // Clean up
     const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+    const jsonFile = await Deno.open(jsonFilePath);
+    Deno.close(jsonFile.rid);
     Deno.close(tmpDirPathAsFile.rid);
     await Deno.remove(tmpDirPath, { recursive: true });
 
     console.log = log;
+  });
+
+  test("should log a message about determining progress", async () => {
+    await verifyPracticeContent(tmpDirPath);
+
+    assertEquals(messages[0], "Determining course progress...");
+  });
+
+  test("should log a message with the course name, module, lesson and sublesson", async () => {
+    await verifyPracticeContent(tmpDirPath);
+
+    assertEquals(messages[1], "Course name: 'Basics of TypeScript'");
+    assertEquals(messages[2], "Current Module: 'How to Read TypeScript'");
+    assertEquals(messages[3], "Current Lesson: 'Annotations'");
+    assertEquals(
+      messages[4],
+      "Current Sublesson: 'Parameter Type Annotations'",
+    );
   });
 });

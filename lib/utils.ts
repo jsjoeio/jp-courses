@@ -21,6 +21,7 @@ import {
   VerifyPurchaseResponse,
 } from "./types.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
+import { blue } from "https://deno.land/std@0.93.0/fmt/colors.ts";
 import { unZipFromFile } from "https://deno.land/x/zip@v1.1.1/mod.ts";
 import {
   Destination,
@@ -433,7 +434,14 @@ export async function getCourseProgress(dir: string) {
 /**
  * Verifies practice content
  */
-export function verifyPracticeContent(dir: string): void {
-  console.log(dir);
+export async function verifyPracticeContent(dir: string): Promise<void> {
+  console.log("Determining course progress...");
+  const progress = await getCourseProgress(dir);
+
+  console.log(`Course name: '${progress.course}'`);
+  console.log(`Current Module: '${progress.module}'`);
+  console.log(`Current Lesson: '${progress.lesson}'`);
+  console.log(`Current Sublesson: '${progress.sublesson}'`);
+
   return undefined;
 }
