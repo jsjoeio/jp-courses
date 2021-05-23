@@ -461,7 +461,6 @@ Thoughts
 This will be the function that runs when we call `jp-courses test`
 
 It will:
-1. determine which module, lesson and sub-lesson is in progress
 2. it will then test all the exercises and all the quizzes
 3. it will mark them complete if complete
 4. if all exericses, quizzes are complete, it will mark sub-lesson complete

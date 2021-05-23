@@ -445,3 +445,13 @@ export async function verifyPracticeContent(dir: string): Promise<void> {
 
   return undefined;
 }
+
+/**
+ * Looks for a string in a file
+ */
+
+export async function hasStringMatch(pathToFile: string, strings: string[]): boolean {
+  const fileText = await Deno.readTextFile(pathToFile)
+  // TODO stopped here. figure out how to check for substring in file
+  return false
+}
