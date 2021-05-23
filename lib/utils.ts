@@ -450,8 +450,10 @@ export async function verifyPracticeContent(dir: string): Promise<void> {
  * Looks for a string in a file
  */
 
-export async function hasStringMatch(pathToFile: string, strings: string[]): boolean {
-  const fileText = await Deno.readTextFile(pathToFile)
-  // TODO stopped here. figure out how to check for substring in file
-  return false
+export async function hasStringMatch(
+  pathToFile: string,
+  answers: string[],
+): Promise<boolean> {
+  const fileText = await Deno.readTextFile(pathToFile);
+  return answers.some((answer) => fileText.includes(answer));
 }

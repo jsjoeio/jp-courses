@@ -8,6 +8,7 @@ import {
   getPortEnv,
   handleArgs,
   hasNextArg,
+  hasStringMatch,
   isValidCourseConfig,
   isValidDir,
   isValidPaymentIdValue,
@@ -718,5 +719,51 @@ describe("getCourseProgress", () => {
     const progress = await getCourseProgress(tmpDirPath);
 
     assertEquals(progress.sublesson, "Parameter Type Annotations");
+  });
+});
+
+describe("hasStringMatch", () => {
+  const prefix = `hasStringMatch`;
+  let tmpDirPath = "";
+  let pathToTextFileWithAnswer = "";
+  let pathToTextFileWithoutAnswer = "";
+  // TODO finish
+
+  beforeEach(async () => {
+    // Create a temporary directory
+    tmpDirPath = await Deno.makeTempDir({ prefix });
+    // create tmp file with text
+    pathToTextFileWithAnswer = `${tmpDirPath}/answer.md`;
+    pathToTextFileWithoutAnswer = `${tmpDirPath}/no-answer.md`;
+    await Deno.writeTextFile(
+      pathToTextFileWithAnswer,
+      `
+function sum(a: number, b: number) {
+  return a + b;
+}
+    `,
+    );
+    await Deno.writeTextFile(pathToTextFileWithoutAnswer, "helloworld");
+  });
+  afterEach(async () => {
+    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
+    Deno.close(tmpDirPathAsFile.rid);
+    await Deno.remove(tmpDirPath, { recursive: true });
+  });
+
+  test("should return true if file has one of the answers", async () => {
+    const expectedAnswer = "a: number, b: number";
+    const actual = await hasStringMatch(pathToTextFileWithAnswer, [
+      expectedAnswer,
+    ]);
+    assertEquals(actual, true);
+  });
+
+  test("should return false if file does not have one of the answers", async () => {
+    const expectedAnswer = "a: number, b: number";
+    const actual = await hasStringMatch(pathToTextFileWithoutAnswer, [
+      expectedAnswer,
+    ]);
+    assertEquals(actual, false);
   });
 });
