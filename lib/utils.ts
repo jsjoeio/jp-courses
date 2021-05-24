@@ -443,6 +443,31 @@ export async function verifyPracticeContent(dir: string): Promise<void> {
   console.log(`Current Lesson: '${progress.lesson}'`);
   console.log(`Current Sublesson: '${progress.sublesson}'`);
 
+  const courseConfig = await getCourseConfig(dir);
+
+  // TODO maybe consider updating course progress
+  // to return the objects instead of just the titles
+  // because we're duplicating work here
+  const currentModule =
+    courseConfig.modules.filter((module) =>
+      module.title === progress.module
+    )[0];
+
+  const currentLesson =
+    currentModule.lessons.filter((lesson) =>
+      lesson.title === progress.lesson
+    )[0];
+
+  const currentSublesson =
+    currentLesson.sublessons.filter((sublesson) =>
+      sublesson.title === progress.sublesson
+    )[0];
+
+  if (!currentSublesson.completed && currentSublesson.exercises.length > 0) {
+    console.log("Checking exercises...");
+    // TODO validateExercises
+  }
+
   return undefined;
 }
 

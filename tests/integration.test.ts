@@ -470,8 +470,10 @@ It will:
 */
 describe("verifyPracticeContent", () => {
   let tmpDirPath = "";
+  let practiceDirPath = "";
   const prefix = `verifyPracticeContent`;
   let jsonFilePath = "";
+  let exercisesFilePath = "";
   const course: CourseConfig = {
     name: "Basics of TypeScript",
     author: {
@@ -558,8 +560,43 @@ describe("verifyPracticeContent", () => {
 
   beforeEach(async () => {
     tmpDirPath = await Deno.makeTempDir({ prefix });
+    practiceDirPath = `${tmpDirPath}/practice`;
+    await Deno.mkdir(practiceDirPath);
     jsonFilePath = `${tmpDirPath}/config.json`;
+    exercisesFilePath = `${practiceDirPath}/exercises.md`;
     await Deno.writeTextFile(jsonFilePath, JSON.stringify(course));
+    await Deno.writeTextFile(
+      exercisesFilePath,
+      `## Exercises
+
+    ### 1 - Write Your Own
+
+    Now it's your turn. Write a function called 'sum' which takes in two
+    parameters, \`a\` and \`b\` both of which are type \`number\`. The function should
+    return \`a + b\`.
+
+    \`\`\`typescript
+    function helloWorld(name: string) {
+      return \`Hello, \${name}! —World\`
+    }
+    \`\`\`
+
+    ### 2 - In The Wild
+
+    Time to see parameter type annotations out in the wild! Look on GitHub/GitLab
+    for an OSS project that has an example of this and then paste the link below.
+
+    Link:
+
+    ### 3 - Meta
+
+    Hopefully you're not scared of large codebases! Go to the [TypeScript
+    repo](https://github.com/microsoft/TypeScript) and find an example of
+    parameter type annotations and paste the link below.
+
+    Link:
+    `,
+    );
 
     console.log = (x) => {
       messages.push(x);
@@ -570,8 +607,10 @@ describe("verifyPracticeContent", () => {
     // Clean up
     const tmpDirPathAsFile = await Deno.open(tmpDirPath);
     const jsonFile = await Deno.open(jsonFilePath);
+    const exerciseFile = await Deno.open(exercisesFilePath);
     Deno.close(jsonFile.rid);
     Deno.close(tmpDirPathAsFile.rid);
+    Deno.close(exerciseFile.rid);
     await Deno.remove(tmpDirPath, { recursive: true });
 
     console.log = log;
@@ -593,5 +632,11 @@ describe("verifyPracticeContent", () => {
       messages[4],
       "Current Sublesson: 'Parameter Type Annotations'",
     );
+  });
+
+  test("should log a message about checking the exercises", async () => {
+    await verifyPracticeContent(tmpDirPath);
+
+    assertEquals(messages[5], "Checking exercises...");
   });
 });
