@@ -9,6 +9,7 @@ import {
   handleArgs,
   hasNextArg,
   hasStringMatch,
+  hasSubstringMatch,
   isValidCourseConfig,
   isValidDir,
   isValidPaymentIdValue,
@@ -727,7 +728,6 @@ describe("hasStringMatch", () => {
   let tmpDirPath = "";
   let pathToTextFileWithAnswer = "";
   let pathToTextFileWithoutAnswer = "";
-  // TODO finish
 
   beforeEach(async () => {
     // Create a temporary directory
@@ -764,6 +764,25 @@ function sum(a: number, b: number) {
     const actual = await hasStringMatch(pathToTextFileWithoutAnswer, [
       expectedAnswer,
     ]);
+    assertEquals(actual, false);
+  });
+});
+
+describe("hasSubstringMatch", () => {
+  test("should return true if it finds a match", () => {
+    const actual = hasSubstringMatch(
+      "Link(2): https://github.com/jsjoeio/typescript-thing",
+      ["https://github.com", "https://gitlab.com"],
+    );
+
+    assertEquals(actual, true);
+  });
+  test("should return false if no matches found", () => {
+    const actual = hasSubstringMatch(
+      "Link(2): https://twitter.com",
+      ["https://github.com", "https://gitlab.com"],
+    );
+
     assertEquals(actual, false);
   });
 });

@@ -449,11 +449,17 @@ export async function verifyPracticeContent(dir: string): Promise<void> {
 /**
  * Looks for a string in a file
  */
-
 export async function hasStringMatch(
   pathToFile: string,
   answers: string[],
 ): Promise<boolean> {
   const fileText = await Deno.readTextFile(pathToFile);
-  return answers.some((answer) => fileText.includes(answer));
+  return hasSubstringMatch(fileText, answers);
+}
+
+/**
+ * Checks for substring match
+ */
+export function hasSubstringMatch(str: string, matches: string[]) {
+  return matches.some((match) => str.includes(match));
 }
