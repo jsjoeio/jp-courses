@@ -503,7 +503,7 @@ describe("verifyPracticeContent", () => {
                     number: 1,
                     skippable: false,
                     completed: false,
-                    answerType: "stringMatch",
+                    answerType: "subStringMatch",
                     answers: ["a: number, b: number"],
                   },
                   {

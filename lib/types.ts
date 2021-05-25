@@ -72,13 +72,21 @@ type Author = {
   website?: string;
 };
 
-type CourseExercise = {
+type AnswerType = "subStringMatch";
+
+export type CourseExercise = {
   title: string;
   number: number;
   skippable: boolean;
   completed: boolean;
-  answerType: "stringMatch" | "subStringMatch";
+  answerType: AnswerType;
   answers: string[];
+};
+
+export type CourseExerciseResults = {
+  passed: CourseExercise[];
+  failed: CourseExercise[];
+  skipped: CourseExercise[];
 };
 
 type CourseQuizQuestion = {

@@ -1,15 +1,20 @@
 // Unit Tests
 // Anything that doesn't rely on something else
 // i.e. a simple function like checking for next arg
-import { Args, CourseConfig, ScriptFlagsAndArgs } from "../lib/types.ts";
+import {
+  Args,
+  CourseConfig,
+  CourseExercise,
+  ScriptFlagsAndArgs,
+} from "../lib/types.ts";
 import {
   getCourseProgress,
   getDryRunEnv,
   getPortEnv,
   handleArgs,
   hasNextArg,
-  hasStringMatch,
-  hasSubstringMatch,
+  hasSubStringMatch,
+  isExercisePassing,
   isValidCourseConfig,
   isValidDir,
   isValidPaymentIdValue,
@@ -17,6 +22,7 @@ import {
   logFnNameAndDescription,
   removeZip,
   setDryRunEnv,
+  verifyExercises,
   verifyPurchase,
 } from "../lib/utils.ts";
 import {
@@ -522,7 +528,7 @@ describe("isValidCourseConfig", () => {
                       number: 1,
                       skippable: false,
                       completed: false,
-                      answerType: "stringMatch",
+                      answerType: "subStringMatch",
                       answers: ["a: number, b: number"],
                     },
                     {
@@ -624,7 +630,7 @@ describe("getCourseProgress", () => {
                     number: 1,
                     skippable: false,
                     completed: false,
-                    answerType: "stringMatch",
+                    answerType: "subStringMatch",
                     answers: ["a: number, b: number"],
                   },
                   {
@@ -723,66 +729,93 @@ describe("getCourseProgress", () => {
   });
 });
 
-describe("hasStringMatch", () => {
-  const prefix = `hasStringMatch`;
-  let tmpDirPath = "";
-  let pathToTextFileWithAnswer = "";
-  let pathToTextFileWithoutAnswer = "";
-
-  beforeEach(async () => {
-    // Create a temporary directory
-    tmpDirPath = await Deno.makeTempDir({ prefix });
-    // create tmp file with text
-    pathToTextFileWithAnswer = `${tmpDirPath}/answer.md`;
-    pathToTextFileWithoutAnswer = `${tmpDirPath}/no-answer.md`;
-    await Deno.writeTextFile(
-      pathToTextFileWithAnswer,
-      `
-function sum(a: number, b: number) {
-  return a + b;
-}
-    `,
-    );
-    await Deno.writeTextFile(pathToTextFileWithoutAnswer, "helloworld");
-  });
-  afterEach(async () => {
-    const tmpDirPathAsFile = await Deno.open(tmpDirPath);
-    Deno.close(tmpDirPathAsFile.rid);
-    await Deno.remove(tmpDirPath, { recursive: true });
-  });
-
-  test("should return true if file has one of the answers", async () => {
-    const expectedAnswer = "a: number, b: number";
-    const actual = await hasStringMatch(pathToTextFileWithAnswer, [
-      expectedAnswer,
-    ]);
-    assertEquals(actual, true);
-  });
-
-  test("should return false if file does not have one of the answers", async () => {
-    const expectedAnswer = "a: number, b: number";
-    const actual = await hasStringMatch(pathToTextFileWithoutAnswer, [
-      expectedAnswer,
-    ]);
-    assertEquals(actual, false);
-  });
-});
-
-describe("hasSubstringMatch", () => {
+describe("hasSubStringMatch", () => {
   test("should return true if it finds a match", () => {
-    const actual = hasSubstringMatch(
+    const actual = hasSubStringMatch(
       "Link(2): https://github.com/jsjoeio/typescript-thing",
       ["https://github.com", "https://gitlab.com"],
     );
 
     assertEquals(actual, true);
   });
+
   test("should return false if no matches found", () => {
-    const actual = hasSubstringMatch(
+    const actual = hasSubStringMatch(
       "Link(2): https://twitter.com",
       ["https://github.com", "https://gitlab.com"],
     );
 
     assertEquals(actual, false);
+  });
+});
+
+describe("isExercisePassing", () => {
+  test("should pass if answer is correct", () => {
+    const exercise: CourseExercise = {
+      title: "In The Wild",
+      number: 2,
+      skippable: true,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    };
+    const answer = "https://github.com/microsoft/TypeScript";
+
+    const actual = isExercisePassing(exercise, answer);
+    assertEquals(actual, true);
+  });
+
+  test("should pass if answer is correct for longer string", () => {
+    const exercise: CourseExercise = {
+      title: "Write Your Own",
+      number: 1,
+      skippable: false,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["a: number, b: number"],
+    };
+    const answer = `
+    function sum(a: number, b: number) {
+      return a + b;
+    }
+        `;
+
+    const actual = isExercisePassing(exercise, answer);
+    assertEquals(actual, true);
+  });
+
+  test("should fail if answer is incorrect", () => {
+    const exercise: CourseExercise = {
+      title: "In The Wild",
+      number: 2,
+      skippable: true,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    };
+    const answer = "https://twitter.com/jsjoeio";
+
+    const actual = isExercisePassing(exercise, answer);
+    assertEquals(actual, false);
+  });
+});
+
+describe("verifyExercises", () => {
+  const pathToExerciseFile = "";
+  test("should return the exercise results with passed, failed and skipped", () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: true,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = verifyExercises(exercises, pathToExerciseFile);
+
+    ["passed", "failed", "skipped"].forEach((property) => {
+      const hasProperty = results.hasOwnProperty(property);
+      assertEquals(hasProperty, true);
+    });
   });
 });

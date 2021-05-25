@@ -14,6 +14,8 @@ import {
 import {
   Args,
   CourseConfig,
+  CourseExercise,
+  CourseExerciseResults,
   CourseProgress,
   PaymentId,
   ScriptFlagsAndArgs,
@@ -21,7 +23,7 @@ import {
   VerifyPurchaseResponse,
 } from "./types.ts";
 import { exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
-import { blue } from "https://deno.land/std@0.93.0/fmt/colors.ts";
+// import { blue } from "https://deno.land/std@0.93.0/fmt/colors.ts";
 import { unZipFromFile } from "https://deno.land/x/zip@v1.1.1/mod.ts";
 import {
   Destination,
@@ -472,19 +474,37 @@ export async function verifyPracticeContent(dir: string): Promise<void> {
 }
 
 /**
- * Looks for a string in a file
+ * Checks for substring match
  */
-export async function hasStringMatch(
-  pathToFile: string,
-  answers: string[],
-): Promise<boolean> {
-  const fileText = await Deno.readTextFile(pathToFile);
-  return hasSubstringMatch(fileText, answers);
+export function hasSubStringMatch(str: string, matches: string[]) {
+  return matches.some((match) => str.includes(match));
 }
 
 /**
- * Checks for substring match
+ * Checks if an exercise is passing
+ * i.e. the answer the student gave is correct
  */
-export function hasSubstringMatch(str: string, matches: string[]) {
-  return matches.some((match) => str.includes(match));
+export function isExercisePassing(exercise: CourseExercise, answer: string) {
+  switch (exercise.answerType) {
+    case "subStringMatch":
+      return hasSubStringMatch(answer, exercise.answers);
+    default:
+      return false;
+  }
+}
+
+/**
+ * Verifies the exercises using the exercise file
+ */
+export function verifyExercises(
+  exercises: CourseExercise[],
+  pathToExerciseFile: string,
+) {
+  const exerciseResults: CourseExerciseResults = {
+    passed: [],
+    failed: [],
+    skipped: [],
+  };
+  // TODO check each exercise
+  return exerciseResults;
 }
