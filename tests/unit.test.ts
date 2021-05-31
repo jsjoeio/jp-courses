@@ -804,17 +804,22 @@ describe("isExercisePassing", () => {
 describe("verifyExercises", () => {
   let tmpDirPath = "";
   let pathToExerciseFileNoAnswers = "";
+  let pathToExerciseFileWithAnswers = "";
   beforeEach(async () => {
     tmpDirPath = await createTmpDir("verifyExercises");
     pathToExerciseFileNoAnswers = `${tmpDirPath}/exercises.md`;
+    pathToExerciseFileWithAnswers = `${tmpDirPath}/exercises-with-answers.md`;
     await Deno.writeTextFile(pathToExerciseFileNoAnswers, "");
+    await Deno.writeTextFile(
+      pathToExerciseFileWithAnswers,
+      "https://gitlab.com",
+    );
   });
 
   afterEach(async () => {
     await cleanUpTmpDir(tmpDirPath);
   });
 
-  const pathToExerciseFile = "";
   test("should return the exercise results with passed, failed and skipped", async () => {
     const exercises: CourseExercise[] = [{
       title: "In The Wild",
@@ -867,5 +872,22 @@ describe("verifyExercises", () => {
     );
 
     assertEquals(results.failed[0], exercises[0]);
+  });
+
+  test("should return passed exercises", async () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: false,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileWithAnswers,
+    );
+
+    assertEquals(results.passed[0], exercises[0]);
   });
 });
