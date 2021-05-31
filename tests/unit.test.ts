@@ -40,6 +40,7 @@ import {
   PORT_ENV_KEY,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
+import { cleanUpTmpDir, createTmpDir } from "./helpers.ts";
 import { getParentDir } from "../lib/server.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 import { ensureDir, exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
@@ -801,8 +802,20 @@ describe("isExercisePassing", () => {
 });
 
 describe("verifyExercises", () => {
+  let tmpDirPath = "";
+  let pathToExerciseFileNoAnswers = "";
+  beforeEach(async () => {
+    tmpDirPath = await createTmpDir("verifyExercises");
+    pathToExerciseFileNoAnswers = `${tmpDirPath}/exercises.md`;
+    await Deno.writeTextFile(pathToExerciseFileNoAnswers, "");
+  });
+
+  afterEach(async () => {
+    await cleanUpTmpDir(tmpDirPath);
+  });
+
   const pathToExerciseFile = "";
-  test("should return the exercise results with passed, failed and skipped", () => {
+  test("should return the exercise results with passed, failed and skipped", async () => {
     const exercises: CourseExercise[] = [{
       title: "In The Wild",
       number: 2,
@@ -811,11 +824,31 @@ describe("verifyExercises", () => {
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
     }];
-    const results = verifyExercises(exercises, pathToExerciseFile);
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileNoAnswers,
+    );
 
     ["passed", "failed", "skipped"].forEach((property) => {
       const hasProperty = results.hasOwnProperty(property);
       assertEquals(hasProperty, true);
     });
+  });
+
+  test("should return skipped exercises if no answer", async () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: true,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileNoAnswers,
+    );
+
+    assertEquals(results.skipped[0], exercises[0]);
   });
 });

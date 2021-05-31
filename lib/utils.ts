@@ -496,15 +496,28 @@ export function isExercisePassing(exercise: CourseExercise, answer: string) {
 /**
  * Verifies the exercises using the exercise file
  */
-export function verifyExercises(
+export async function verifyExercises(
   exercises: CourseExercise[],
   pathToExerciseFile: string,
 ) {
+  const _exercises = [...exercises];
   const exerciseResults: CourseExerciseResults = {
     passed: [],
     failed: [],
     skipped: [],
   };
-  // TODO check each exercise
+
+  const exerciseFile = await Deno.readTextFile(pathToExerciseFile);
+
+  exercises.map((exercise) => {
+    if (isExercisePassing(exercise, exerciseFile)) {
+      exerciseResults.passed.push(exercise);
+    } else if (exercise.skippable) {
+      exerciseResults.skipped.push(exercise);
+    } else {
+      exerciseResults.failed.push(exercise);
+    }
+  });
+
   return exerciseResults;
 }
