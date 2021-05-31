@@ -851,4 +851,21 @@ describe("verifyExercises", () => {
 
     assertEquals(results.skipped[0], exercises[0]);
   });
+
+  test("should return failed exercises if no answer and not skippable", async () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: false,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileNoAnswers,
+    );
+
+    assertEquals(results.failed[0], exercises[0]);
+  });
 });
