@@ -500,7 +500,6 @@ export async function verifyExercises(
   exercises: CourseExercise[],
   pathToExerciseFile: string,
 ) {
-  const _exercises = [...exercises];
   const exerciseResults: CourseExerciseResults = {
     passed: [],
     failed: [],
@@ -511,8 +510,10 @@ export async function verifyExercises(
 
   exercises.map((exercise) => {
     if (isExercisePassing(exercise, exerciseFile)) {
+      exercise.completed = true;
       exerciseResults.passed.push(exercise);
     } else if (exercise.skippable) {
+      exercise.completed = true;
       exerciseResults.skipped.push(exercise);
     } else {
       exerciseResults.failed.push(exercise);
@@ -520,4 +521,15 @@ export async function verifyExercises(
   });
 
   return exerciseResults;
+}
+
+export async function updateCourseConfig(
+  updatedConfig: CourseConfig,
+  dir: string,
+) {
+  const pathToCourseConfig = `${dir}/config.json`;
+  await Deno.writeTextFile(
+    pathToCourseConfig,
+    JSON.stringify(updatedConfig),
+  );
 }

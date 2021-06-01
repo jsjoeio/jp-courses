@@ -22,6 +22,7 @@ import {
   logFnNameAndDescription,
   removeZip,
   setDryRunEnv,
+  updateCourseConfig,
   verifyExercises,
   verifyPurchase,
 } from "../lib/utils.ts";
@@ -40,7 +41,7 @@ import {
   PORT_ENV_KEY,
   UNSUPPORTED_ARG,
 } from "../lib/constants.ts";
-import { cleanUpTmpDir, createTmpDir } from "./helpers.ts";
+import { cleanUpTmpDir, createTmpDir, getFakeCourseConfig } from "./helpers.ts";
 import { getParentDir } from "../lib/server.ts";
 import { assertEquals } from "https://deno.land/std@0.93.0/testing/asserts.ts";
 import { ensureDir, exists } from "https://deno.land/std@0.93.0/fs/mod.ts";
@@ -857,6 +858,23 @@ describe("verifyExercises", () => {
     assertEquals(results.skipped[0], exercises[0]);
   });
 
+  test("should mark skipped exercises completed", async () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: true,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileNoAnswers,
+    );
+
+    assertEquals(results.skipped[0]["completed"], true);
+  });
+
   test("should return failed exercises if no answer and not skippable", async () => {
     const exercises: CourseExercise[] = [{
       title: "In The Wild",
@@ -889,5 +907,57 @@ describe("verifyExercises", () => {
     );
 
     assertEquals(results.passed[0], exercises[0]);
+  });
+
+  test("should mark passed exercises completed", async () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: false,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileWithAnswers,
+    );
+
+    assertEquals(results.passed[0]["completed"], true);
+  });
+});
+
+describe("updateCourseConfig", () => {
+  const fakeCourseConfig = getFakeCourseConfig();
+  let tmpDirPath = "";
+  let jsonFilePath = "";
+  beforeEach(async () => {
+    tmpDirPath = await createTmpDir("updateCourseConfig");
+    jsonFilePath = `${tmpDirPath}/config.json`;
+    await Deno.writeTextFile(
+      jsonFilePath,
+      JSON.stringify(fakeCourseConfig),
+    );
+  });
+
+  afterEach(async () => {
+    await cleanUpTmpDir(tmpDirPath);
+  });
+
+  test("should update the course config with exercises", async () => {
+    const updatedConfig = getFakeCourseConfig();
+    const sublessons = updatedConfig["modules"][0]["lessons"][0]["sublessons"];
+    const firstSublesson = sublessons[0];
+    firstSublesson.completed = true;
+    firstSublesson.exercises.forEach((exercise) => {
+      exercise.completed = true;
+      return exercise;
+    });
+
+    await updateCourseConfig(updatedConfig, tmpDirPath);
+
+    const actualUpdatedConfig = await Deno.readTextFile(jsonFilePath);
+
+    assertEquals(actualUpdatedConfig, JSON.stringify(updatedConfig));
   });
 });
