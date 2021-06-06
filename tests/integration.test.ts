@@ -503,6 +503,7 @@ describe("verifyPracticeContent", () => {
                     number: 1,
                     skippable: false,
                     completed: false,
+                    didSkip: undefined,
                     answerType: "subStringMatch",
                     answers: ["a: number, b: number"],
                   },
@@ -511,16 +512,24 @@ describe("verifyPracticeContent", () => {
                     number: 2,
                     skippable: true,
                     completed: false,
+                    didSkip: false,
                     answerType: "subStringMatch",
-                    answers: ["https://github.com", "https://gitlab.com"],
+                    answers: [
+                      "Link(2): https://github.com",
+                      "Link(2): https://gitlab.com",
+                    ],
                   },
                   {
                     title: "Meta",
                     number: 3,
                     skippable: true,
+                    didSkip: false,
                     completed: false,
                     answerType: "subStringMatch",
-                    answers: ["https://github.com", "https://gitlab.com"],
+                    answers: [
+                      "Link(3): https://github.com",
+                      "Link(3): https://gitlab.com",
+                    ],
                   },
                 ],
                 quiz: [
@@ -576,7 +585,7 @@ describe("verifyPracticeContent", () => {
     return \`a + b\`.
 
     \`\`\`typescript
-    function helloWorld(name: string) {
+    function hi(a:number) {
       return \`Hello, \${name}! —World\`
     }
     \`\`\`
@@ -586,7 +595,7 @@ describe("verifyPracticeContent", () => {
     Time to see parameter type annotations out in the wild! Look on GitHub/GitLab
     for an OSS project that has an example of this and then paste the link below.
 
-    Link:
+    Link(2):
 
     ### 3 - Meta
 
@@ -594,7 +603,7 @@ describe("verifyPracticeContent", () => {
     repo](https://github.com/microsoft/TypeScript) and find an example of
     parameter type annotations and paste the link below.
 
-    Link:
+    Link(3): https://github.com/typescript/cool-repo
     `,
     );
 
@@ -637,6 +646,22 @@ describe("verifyPracticeContent", () => {
   test("should log a message about checking the exercises", async () => {
     await verifyPracticeContent(tmpDirPath);
 
-    assertEquals(messages[5], "Checking exercises...");
+    assertEquals(
+      messages[5],
+      `Verifying Sublesson: Parameter Type Annotations`,
+    );
+  });
+
+  test("should log a message with exercies results", async () => {
+    await verifyPracticeContent(tmpDirPath);
+
+    assertEquals(messages[6], `Exercise results:`);
+    assertEquals(
+      messages[7],
+      `1. FAIL`,
+    );
+    assertEquals(messages[8], `2. SKIP`);
+    assertEquals(messages[9], `3. PASS`);
+    assertEquals(messages[10], `Completed: 2/3`);
   });
 });

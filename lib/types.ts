@@ -78,6 +78,8 @@ export type CourseExercise = {
   title: string;
   number: number;
   skippable: boolean;
+  /** If they skip it, then mark as true. and undefined if not skippable */
+  didSkip: boolean | undefined;
   completed: boolean;
   answerType: AnswerType;
   answers: string[];

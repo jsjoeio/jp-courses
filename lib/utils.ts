@@ -466,8 +466,33 @@ export async function verifyPracticeContent(dir: string): Promise<void> {
     )[0];
 
   if (!currentSublesson.completed && currentSublesson.exercises.length > 0) {
-    console.log("Checking exercises...");
-    // TODO validateExercises
+    console.log(`Verifying Sublesson: ${currentSublesson.title}`);
+    const exerciseResults = await verifyExercises(
+      currentSublesson.exercises,
+      `${dir}/practice/exercises.md`,
+    );
+
+    let updatedExercises = [
+      ...exerciseResults.passed,
+      ...exerciseResults.skipped,
+      ...exerciseResults.failed,
+    ];
+
+    updatedExercises = sortExercisesByNumber(updatedExercises);
+    // Log the results for each exercise
+    console.log("Exercise results:");
+    updatedExercises.forEach((exericse) => {
+      const result = getExerciseResult(exericse);
+      console.log(result);
+    });
+
+    const TOTAL_COUNT = updatedExercises.length;
+    const TOTAL_COMPLETED_COUNT = exerciseResults.passed.length +
+      exerciseResults.skipped.length;
+
+    console.log(`Completed: ${TOTAL_COMPLETED_COUNT}/${TOTAL_COUNT}`);
+
+    // TODO save updatedExercises to course config
   }
 
   return undefined;
@@ -514,6 +539,7 @@ export async function verifyExercises(
       exerciseResults.passed.push(exercise);
     } else if (exercise.skippable) {
       exercise.completed = true;
+      exercise.didSkip = true;
       exerciseResults.skipped.push(exercise);
     } else {
       exerciseResults.failed.push(exercise);
@@ -532,4 +558,25 @@ export async function updateCourseConfig(
     pathToCourseConfig,
     JSON.stringify(updatedConfig),
   );
+}
+
+/**
+ * Sorts exercises by there number, lowest to highest
+ */
+export function sortExercisesByNumber(exercises: CourseExercise[]) {
+  const newArray = [...exercises];
+
+  return newArray.sort((exercise1, exercise2) => {
+    return exercise1.number - exercise2.number;
+  });
+}
+
+export function getExerciseResult(exercise: CourseExercise) {
+  let STATE = "PASS";
+  if (exercise.skippable && exercise.didSkip) {
+    STATE = "SKIP";
+  } else if (!exercise.completed) {
+    STATE = "FAIL";
+  }
+  return `${exercise.number}. ${STATE}`;
 }

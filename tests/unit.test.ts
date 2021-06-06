@@ -10,6 +10,7 @@ import {
 import {
   getCourseProgress,
   getDryRunEnv,
+  getExerciseResult,
   getPortEnv,
   handleArgs,
   hasNextArg,
@@ -22,6 +23,7 @@ import {
   logFnNameAndDescription,
   removeZip,
   setDryRunEnv,
+  sortExercisesByNumber,
   updateCourseConfig,
   verifyExercises,
   verifyPurchase,
@@ -529,6 +531,7 @@ describe("isValidCourseConfig", () => {
                       title: "Write Your Own",
                       number: 1,
                       skippable: false,
+                      didSkip: undefined,
                       completed: false,
                       answerType: "subStringMatch",
                       answers: ["a: number, b: number"],
@@ -537,6 +540,7 @@ describe("isValidCourseConfig", () => {
                       title: "In The Wild",
                       number: 2,
                       skippable: true,
+                      didSkip: false,
                       completed: false,
                       answerType: "subStringMatch",
                       answers: ["https://github.com", "https://gitlab.com"],
@@ -545,6 +549,7 @@ describe("isValidCourseConfig", () => {
                       title: "Meta",
                       number: 3,
                       skippable: true,
+                      didSkip: false,
                       completed: false,
                       answerType: "subStringMatch",
                       answers: ["https://github.com", "https://gitlab.com"],
@@ -631,6 +636,7 @@ describe("getCourseProgress", () => {
                     title: "Write Your Own",
                     number: 1,
                     skippable: false,
+                    didSkip: undefined,
                     completed: false,
                     answerType: "subStringMatch",
                     answers: ["a: number, b: number"],
@@ -639,6 +645,7 @@ describe("getCourseProgress", () => {
                     title: "In The Wild",
                     number: 2,
                     skippable: true,
+                    didSkip: false,
                     completed: false,
                     answerType: "subStringMatch",
                     answers: ["https://github.com", "https://gitlab.com"],
@@ -647,6 +654,7 @@ describe("getCourseProgress", () => {
                     title: "Meta",
                     number: 3,
                     skippable: true,
+                    didSkip: false,
                     completed: false,
                     answerType: "subStringMatch",
                     answers: ["https://github.com", "https://gitlab.com"],
@@ -757,6 +765,7 @@ describe("isExercisePassing", () => {
       title: "In The Wild",
       number: 2,
       skippable: true,
+      didSkip: false,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -772,6 +781,7 @@ describe("isExercisePassing", () => {
       title: "Write Your Own",
       number: 1,
       skippable: false,
+      didSkip: undefined,
       completed: false,
       answerType: "subStringMatch",
       answers: ["a: number, b: number"],
@@ -791,6 +801,7 @@ describe("isExercisePassing", () => {
       title: "In The Wild",
       number: 2,
       skippable: true,
+      didSkip: false,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -826,6 +837,7 @@ describe("verifyExercises", () => {
       title: "In The Wild",
       number: 2,
       skippable: true,
+      didSkip: false,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -846,6 +858,7 @@ describe("verifyExercises", () => {
       title: "In The Wild",
       number: 2,
       skippable: true,
+      didSkip: false,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -863,6 +876,7 @@ describe("verifyExercises", () => {
       title: "In The Wild",
       number: 2,
       skippable: true,
+      didSkip: false,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -875,11 +889,30 @@ describe("verifyExercises", () => {
     assertEquals(results.skipped[0]["completed"], true);
   });
 
+  test("should mark skipped exercises with didSkip", async () => {
+    const exercises: CourseExercise[] = [{
+      title: "In The Wild",
+      number: 2,
+      skippable: true,
+      didSkip: false,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    }];
+    const results = await verifyExercises(
+      exercises,
+      pathToExerciseFileNoAnswers,
+    );
+
+    assertEquals(results.skipped[0]["didSkip"], true);
+  });
+
   test("should return failed exercises if no answer and not skippable", async () => {
     const exercises: CourseExercise[] = [{
       title: "In The Wild",
       number: 2,
       skippable: false,
+      didSkip: undefined,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -897,6 +930,7 @@ describe("verifyExercises", () => {
       title: "In The Wild",
       number: 2,
       skippable: false,
+      didSkip: undefined,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -914,6 +948,7 @@ describe("verifyExercises", () => {
       title: "In The Wild",
       number: 2,
       skippable: false,
+      didSkip: undefined,
       completed: false,
       answerType: "subStringMatch",
       answers: ["https://github.com", "https://gitlab.com"],
@@ -959,5 +994,89 @@ describe("updateCourseConfig", () => {
     const actualUpdatedConfig = await Deno.readTextFile(jsonFilePath);
 
     assertEquals(actualUpdatedConfig, JSON.stringify(updatedConfig));
+  });
+});
+
+describe("sortExercisesByNumber", () => {
+  test("should sort exercises lowest to highest", () => {
+    const exercises: CourseExercise[] = [
+      {
+        title: "Write Your Own",
+        number: 2,
+        skippable: false,
+        completed: false,
+        didSkip: undefined,
+        answerType: "subStringMatch",
+        answers: ["a: number, b: number"],
+      },
+      {
+        title: "In The Wild",
+        number: 3,
+        skippable: true,
+        completed: false,
+        didSkip: false,
+        answerType: "subStringMatch",
+        answers: ["https://github.com", "https://gitlab.com"],
+      },
+      {
+        title: "Meta",
+        number: 1,
+        skippable: true,
+        didSkip: false,
+        completed: false,
+        answerType: "subStringMatch",
+        answers: ["https://github.com", "https://gitlab.com"],
+      },
+    ];
+    const sorted = sortExercisesByNumber(exercises);
+
+    assertEquals(sorted[0].title, "Meta");
+    assertEquals(sorted[1].title, "Write Your Own");
+    assertEquals(sorted[2].title, "In The Wild");
+  });
+});
+
+describe("getExerciseResult", () => {
+  test("should return a FAIL exercise", () => {
+    const exercise: CourseExercise = {
+      title: "Meta",
+      number: 1,
+      skippable: false,
+      didSkip: undefined,
+      completed: false,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    };
+
+    const actual = getExerciseResult(exercise);
+    assertEquals(actual, "1. FAIL");
+  });
+  test("should return a SKIP exercise", () => {
+    const exercise: CourseExercise = {
+      title: "Meta",
+      number: 1,
+      skippable: true,
+      didSkip: true,
+      completed: true,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    };
+
+    const actual = getExerciseResult(exercise);
+    assertEquals(actual, "1. SKIP");
+  });
+  test("should return a PASS exercise", () => {
+    const exercise: CourseExercise = {
+      title: "Meta",
+      number: 1,
+      skippable: false,
+      didSkip: undefined,
+      completed: true,
+      answerType: "subStringMatch",
+      answers: ["https://github.com", "https://gitlab.com"],
+    };
+
+    const actual = getExerciseResult(exercise);
+    assertEquals(actual, "1. PASS");
   });
 });
